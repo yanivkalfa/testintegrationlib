@@ -1,6 +1,13 @@
 pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
 plugins { id("com.facebook.react.settings") }
-extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
+extensions.configure(com.facebook.react.ReactSettingsExtension) { ex -> ex.autolinkLibrariesFromCommand() }
+
 rootProject.name = 'IntegrationTestLibs'
-include ':app'
+include ':app', ':IBScanCommon', ':IBScanUltimate', ':utils'
+
+// Add the paths for the IBScanCommon and IBScanUltimate modules
+project(':IBScanCommon').projectDir = new File(rootProject.projectDir, 'IBScanCommon')
+project(':IBScanUltimate').projectDir = new File(rootProject.projectDir, 'IBScanUltimate')
+project(':utils').projectDir = new File(rootProject.projectDir, 'utils')
+
 includeBuild('../node_modules/@react-native/gradle-plugin')

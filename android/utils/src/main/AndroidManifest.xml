@@ -1,0 +1,3 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- No content necessary since namespace is already defined in build.gradle -->
+</manifest>

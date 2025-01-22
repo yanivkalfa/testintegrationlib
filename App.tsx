@@ -1,117 +1,131 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
+  NativeModules,
   SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
   View,
+  Text,
+  StyleSheet,
+  DeviceEventEmitter,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const { ScannerModule } = NativeModules;
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+// Listen for native logs
+DeviceEventEmitter.addListener('onNativeLog', (event) => {
+  console.log(`NATIVELOG: ${event.log}`);
+});
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const [isConnected, setIsConnected] = useState(false); // Tracks device connection
+  const [scanStatus, setScanStatus] = useState('Idle'); // Placeholder for scan status
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  useEffect(() => {
+    // Listener for device connected
+    const onDeviceConnectedListener = DeviceEventEmitter.addListener(
+      'onDeviceConnected',
+      (message) => {
+        console.log(message); // Log the message
+        //setScanStatus('Device Connected');
+      }
+    );
+
+    // Listener for device disconnected
+    const onDeviceDisconnectedListener = DeviceEventEmitter.addListener(
+      'onDeviceDisconnected',
+      (message) => {
+        console.log(message); // Log the message
+        //setScanStatus('Device Disconnected');
+        setIsConnected(false);
+      }
+    );
+
+    // Listener for permission granted
+    const onPermissionGrantedListener = DeviceEventEmitter.addListener(
+      'onPermissionGranted',
+      (message) => {
+        console.log(message); // Log the message
+        setIsConnected(true); // Device is connected and permission granted
+      }
+    );
+
+    // Listener for permission denied
+    const onPermissionDeniedListener = DeviceEventEmitter.addListener(
+      'onPermissionDenied',
+      (message) => {
+        console.log(message); // Log the message
+        setIsConnected(false); // Device connected but permission denied
+      }
+    );
+
+    // Cleanup listeners on component unmount
+    return () => {
+      onDeviceConnectedListener.remove();
+      onDeviceDisconnectedListener.remove();
+      onPermissionGrantedListener.remove();
+      onPermissionDeniedListener.remove();
+    };
+  }, []);
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <SafeAreaView style={styles.container}>
+      {/* Connection Indicator */}
+      <View
+        style={[
+          styles.connectionBox,
+          { backgroundColor: isConnected ? 'green' : 'red' },
+        ]}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+      <Text style={styles.statusText}>
+        {isConnected ? 'Device Connected' : 'Device Disconnected'}
+      </Text>
+
+      {/* Placeholder for Fingerprint Display */}
+      <View style={styles.placeholder}>
+        <Text style={styles.placeholderText}>Fingerprint Preview</Text>
+      </View>
+
+      {/* Scan Status */}
+      <Text style={styles.scanStatusText}>{scanStatus}</Text>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f5f5f5',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  connectionBox: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    marginBottom: 20,
   },
-  sectionDescription: {
-    marginTop: 8,
+  statusText: {
     fontSize: 18,
-    fontWeight: '400',
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
-  highlight: {
-    fontWeight: '700',
+  placeholder: {
+    width: '80%',
+    height: 200,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  placeholderText: {
+    fontSize: 16,
+    color: '#999',
+  },
+  scanStatusText: {
+    fontSize: 16,
+    color: '#333',
+    marginTop: 20,
   },
 });
 
