@@ -5,66 +5,100 @@ import {
   View,
   Text,
   StyleSheet,
+  Button,
   DeviceEventEmitter,
+  Image,
 } from 'react-native';
 
 const { ScannerModule } = NativeModules;
 
-// Listen for native logs
+// Global native log listener
 DeviceEventEmitter.addListener('onNativeLog', (event) => {
   console.log(`NATIVELOG: ${event.log}`);
 });
 
+const FingerprintPreview = () => {
+  const [base64Image, setBase64Image] = useState(null);
+
+  useEffect(() => {
+
+    const onCaptureUpdatedListener = DeviceEventEmitter
+    .addListener('onCaptureUpdated', (base64Image) => setBase64Image(base64Image));
+
+    const onCaptureCompletedListener = DeviceEventEmitter
+    .addListener('onCaptureCompleted',(base64Image) => setBase64Image(base64Image));
+
+    // Cleanup listeners on unmount
+    return () => {
+      onCaptureUpdatedListener.remove();
+      onCaptureCompletedListener.remove();
+    };
+  }, []);
+
+  return (
+    <View style={styles.placeholder}>
+      {base64Image ? (
+        <Image
+          source={{ uri: `data:image/png;base64,${base64Image}` }}
+          style={styles.previewImage}
+          resizeMode="contain"
+        />
+      ) : (
+        <Text style={styles.placeholderText}>Fingerprint Preview</Text>
+      )}
+    </View>
+  );
+};
+
 function App(): React.JSX.Element {
-  const [isConnected, setIsConnected] = useState(false); // Tracks device connection
+  const [isReadyForScan, setIsReadyForScan] = useState(false);
+  const [isScanning, setIsScanning] = useState(false); // Tracks scanning status
   const [scanStatus, setScanStatus] = useState('Idle'); // Placeholder for scan status
 
   useEffect(() => {
-    // Listener for device connected
-    const onDeviceConnectedListener = DeviceEventEmitter.addListener(
-      'onDeviceConnected',
-      (message) => {
-        console.log(message); // Log the message
-        //setScanStatus('Device Connected');
-      }
-    );
-
-    // Listener for device disconnected
     const onDeviceDisconnectedListener = DeviceEventEmitter.addListener(
       'onDeviceDisconnected',
       (message) => {
-        console.log(message); // Log the message
-        //setScanStatus('Device Disconnected');
-        setIsConnected(false);
+        console.log(message);
+        setIsReadyForScan(false);
       }
     );
 
-    // Listener for permission granted
-    const onPermissionGrantedListener = DeviceEventEmitter.addListener(
-      'onPermissionGranted',
-      (message) => {
-        console.log(message); // Log the message
-        setIsConnected(true); // Device is connected and permission granted
-      }
-    );
-
-    // Listener for permission denied
     const onPermissionDeniedListener = DeviceEventEmitter.addListener(
       'onPermissionDenied',
       (message) => {
-        console.log(message); // Log the message
-        setIsConnected(false); // Device connected but permission denied
+        console.log(message);
+        setIsReadyForScan(false);
+      }
+    );
+
+    const onDeviceReadyForScanning = DeviceEventEmitter.addListener(
+      'onDeviceReadyForScanning',
+      (message) => {
+        console.log(message);
+        setIsReadyForScan(true);
       }
     );
 
     // Cleanup listeners on component unmount
     return () => {
-      onDeviceConnectedListener.remove();
       onDeviceDisconnectedListener.remove();
-      onPermissionGrantedListener.remove();
       onPermissionDeniedListener.remove();
+      onDeviceReadyForScanning.remove();
     };
   }, []);
+
+  const handleStartScan = () => {
+    ScannerModule.beginCaptureImage();
+    setScanStatus('Scanning...');
+    setIsScanning(true);
+  };
+
+  const handleStopScan = () => {
+    ScannerModule.cancelCaptureImage();
+    setScanStatus('Scanning Cancelled');
+    setIsScanning(false);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -72,20 +106,32 @@ function App(): React.JSX.Element {
       <View
         style={[
           styles.connectionBox,
-          { backgroundColor: isConnected ? 'green' : 'red' },
+          { backgroundColor: isReadyForScan ? 'green' : 'red' },
         ]}
       />
       <Text style={styles.statusText}>
-        {isConnected ? 'Device Connected' : 'Device Disconnected'}
+        {isReadyForScan ? 'Device Connected' : 'Device Disconnected'}
       </Text>
 
-      {/* Placeholder for Fingerprint Display */}
-      <View style={styles.placeholder}>
-        <Text style={styles.placeholderText}>Fingerprint Preview</Text>
-      </View>
+      {/* Fingerprint Preview */}
+      <FingerprintPreview />
 
       {/* Scan Status */}
       <Text style={styles.scanStatusText}>{scanStatus}</Text>
+
+      {/* Start/Stop Scan Buttons */}
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Start Scanning"
+          onPress={handleStartScan}
+          disabled={!isReadyForScan || isScanning}
+        />
+        <Button
+          title="Stop Scanning"
+          onPress={handleStopScan}
+          disabled={!isScanning}
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -122,9 +168,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#999',
   },
+  previewImage: {
+    width: '100%',
+    height: '100%',
+  },
   scanStatusText: {
     fontSize: 16,
     color: '#333',
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '60%',
     marginTop: 20,
   },
 });

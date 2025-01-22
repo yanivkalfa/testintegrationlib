@@ -45,6 +45,8 @@ package com.integratedbiometrics.ibscanultimate;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -267,6 +269,70 @@ public class IBScan
         return (count);
     }
 
+    /**
+     * Retrieves all connected devices and their details.
+     * @return List of device details as an array of objects.
+     */
+    public List<DeviceDesc> getAllDevices() {
+        List<DeviceDesc> devices = new ArrayList<>();
+
+        if (m_instance == null) {
+            NativeLogger.log("IBScan instance is null. Cannot fetch devices.");
+            return devices;
+        }
+
+        try {
+            int deviceCount = getDeviceCount();
+            NativeLogger.log("Number of connected devices: " + deviceCount);
+
+            for (int i = 0; i < deviceCount; i++) {
+                DeviceDesc deviceDesc = getDeviceDescription(i);
+                devices.add(deviceDesc);
+
+                NativeLogger.log("Device " + i + " Details:");
+                NativeLogger.log("Device ID: " + deviceDesc.deviceId);
+                NativeLogger.log("Product Name: " + deviceDesc.productName);
+                NativeLogger.log("Serial Number: " + deviceDesc.serialNumber);
+                NativeLogger.log("Interface Type: " + deviceDesc.interfaceType);
+            }
+        } catch (IBScanException e) {
+            NativeLogger.log("Error fetching device details: " + e.getMessage());
+        }
+
+        return devices;
+    }
+
+    /**
+     * Searches for a device by USB ID and returns its index.
+     * @param deviceId USB ID of the device to search for.
+     * @return Index of the matching device, or -1 if no device is found.
+     */
+    public int getDeviceIndexByUsbId(int deviceId) {
+        if (m_instance == null) {
+            NativeLogger.log("IBScan instance is null. Cannot search for devices.");
+            return -1;
+        }
+
+        try {
+            int deviceCount = getDeviceCount();
+
+            for (int i = 0; i < deviceCount; i++) {
+                DeviceDesc deviceDesc = getDeviceDescription(i);
+
+                if (deviceDesc.deviceId == deviceId) {
+                    NativeLogger.log("Found device with ID: " + deviceId + " at index: " + i);
+                    return i;
+                }
+            }
+
+            NativeLogger.log("No device found with ID: " + deviceId);
+        } catch (IBScanException e) {
+            NativeLogger.log("Error searching for device: " + e.getMessage());
+        }
+
+        return -1; // Return -1 if the device is not found
+    }
+
      /**
      * @brief	Enable device count polling for Android
      *
@@ -304,7 +370,7 @@ public class IBScan
         return hasPermission;
     }
 
-    private void registerDynamicReceiver(final UsbDevice device) {
+    private void registerDynamicReceiver(final UsbDevice device, final int deviceId) {
         final IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_USB_PERMISSION); // Only listen for permission events
 
@@ -327,10 +393,10 @@ public class IBScan
                     // Use deviceHasPermission instead of relying on extras
                     if (deviceHasPermission(device)) {
                         NativeLogger.log("Dynamic Receiver: Permission confirmed via deviceHasPermission.");
-                        callbackScanDevicePermissionGranted(device.getDeviceId(), true);
+                        callbackScanDevicePermissionGranted(deviceId, true);
                     } else {
                         NativeLogger.log("Dynamic Receiver: Permission denied via deviceHasPermission.");
-                        callbackScanDevicePermissionGranted(device.getDeviceId(), false);
+                        callbackScanDevicePermissionGranted(deviceId, false);
                     }
 
                     // Unregister this dynamic receiver after handling the intent
@@ -374,7 +440,7 @@ public class IBScan
             }
 
             // Register the dynamic receiver for USB permission
-            registerDynamicReceiver(device);
+            registerDynamicReceiver(device, deviceId);
 
             final Intent intent = new Intent(ACTION_USB_PERMISSION);
             intent.setPackage(this.m_context.getPackageName());
@@ -982,13 +1048,11 @@ public class IBScan
     private static void callbackScanDevicePermissionGranted(final int deviceIndex, final boolean granted)
     {
     	final IBScan ibScan = IBScan.m_instance;
-        NativeLogger.log("ACTION_USB_PERMISSION - FFFFFFFFFFFFFFFFFFFFFFFF");
  		if (ibScan != null)
 		{
-            NativeLogger.log("ACTION_USB_PERMISSION - GGGGGGGGGGGGGGGGGGGGGGG");
 	        if (ibScan.m_listener != null)
 	        {
-                NativeLogger.log("ACTION_USB_PERMISSION - HHHHHHHHHHHHHHHHHHHHHHH");
+                NativeLogger.log("ACTION_USB_PERMISSION - " + deviceIndex);
 	            ibScan.m_listener.scanDevicePermissionGranted(deviceIndex, granted);
 	        }
 		}

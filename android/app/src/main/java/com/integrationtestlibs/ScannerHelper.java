@@ -1,32 +1,51 @@
 package com.integrationtestlibs;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 
 import com.integratedbiometrics.ibscanultimate.IBScan;
 import com.integratedbiometrics.ibscanultimate.IBScanDevice;
 import com.integratedbiometrics.ibscanultimate.IBScanException;
+import com.integratedbiometrics.ibscanultimate.IBScanDeviceListener;
 import com.integratedbiometrics.ibscanultimate.IBScanListener;
+import com.integratedbiometrics.ibscanultimate.IBScanDevice.FingerCountState;
+import com.integratedbiometrics.ibscanultimate.IBScanDevice.FingerQualityState;
+import com.integratedbiometrics.ibscanultimate.IBScanDevice.ImageData;
+import com.integratedbiometrics.ibscanultimate.IBScanDevice.ImageType;
+import com.integratedbiometrics.ibscanultimate.IBScanDevice.PlatenState;
+import com.integratedbiometrics.ibscanultimate.IBScanDevice.SegmentPosition;
 import com.utils.NativeLogger;
 
-public class ScannerHelper implements IBScanListener {
+import java.util.HashMap;
+
+public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
     private static final String TAG = "ScannerHelper";
+    private final Context context;
     private IBScan mIBScan;
+    private IBScanDevice mIBScanDevice;
 
     public interface ScannerEvents {
         void onDeviceConnected(int deviceId);
         void onDeviceDisconnected(int deviceId);
         void onPermissionGranted(int deviceId);
         void onPermissionDenied(int deviceId);
+        void onDeviceReadyForScanning(int deviceId);
+        void onCaptureStarted();
+        void onCaptureCancelled();
+        void onCaptureUpdated(Bitmap image);
+        void onCaptureCompleted(Bitmap image);
         void onError(String errorMessage);
     }
 
     private final ScannerEvents events;
 
     public ScannerHelper(Context context, ScannerEvents events) {
+        this.context = context;
         this.events = events;
 
         try {
-            // Initialize IBScan and set the context
             mIBScan = IBScan.getInstance(context);
             if (mIBScan != null) {
                 mIBScan.setContext(context); // Set the context for USB handling
@@ -82,6 +101,28 @@ public class ScannerHelper implements IBScanListener {
         }
     }
 
+    /*
+    private void printDeviceDetails(int deviceId) {
+        try {
+            // Get the count of connected devices
+            int deviceCount = mIBScan.getDeviceCount();
+            NativeLogger.log("Number of connected devices: " + deviceCount);
+
+            // Iterate over each device using its logical index
+            for (int i = 0; i < deviceCount; i++) {
+                IBScan.DeviceDesc deviceDesc = mIBScan.getDeviceDescription(i);
+                NativeLogger.log("Device " + i + " Details:");
+                NativeLogger.log("Device ID: " + deviceDesc.deviceId);
+                NativeLogger.log("Product Name: " + deviceDesc.productName);
+                NativeLogger.log("Serial Number: " + deviceDesc.serialNumber);
+                NativeLogger.log("Interface Type: " + deviceDesc.interfaceType);
+            }
+        } catch (IBScanException e) {
+            NativeLogger.log("Error fetching device details: " + e.getMessage());
+        }
+    }
+    */
+
     @Override
     public void scanDevicePermissionGranted(int deviceId, boolean granted) {
         NativeLogger.log("ACTION_USB_PERMISSION - IIIIIIIIIIIIIIIIIIII");
@@ -90,6 +131,29 @@ public class ScannerHelper implements IBScanListener {
             if (events != null) {
                 events.onPermissionGranted(deviceId);
             }
+
+            //  printDeviceDetails(deviceId);
+
+
+            int deviceIndex = mIBScan.getDeviceIndexByUsbId(deviceId);
+            if (deviceIndex != -1) {
+                NativeLogger.log("found device for device id: " + deviceId + " At index: " + deviceIndex);
+            } else {
+                NativeLogger.log("Device not found for device id: " + deviceId);
+            }
+
+            // Attempt to open the device
+            try {
+                NativeLogger.log("Opening device at index: " + deviceIndex);
+                mIBScanDevice = mIBScan.openDevice(deviceIndex);
+                mIBScanDevice.setScanDeviceListener(this);
+                NativeLogger.log("Device opened successfully: " + deviceId);
+                if (events != null) {
+                    events.onDeviceReadyForScanning(deviceId);
+                }
+            } catch (IBScanException e) {
+                NativeLogger.log("Exception details: " + e.getType() + ", " + e.getMessage());
+            }
         } else {
             NativeLogger.log("Permission denied for device: " + deviceId);
             if (events != null) {
@@ -97,6 +161,7 @@ public class ScannerHelper implements IBScanListener {
             }
         }
     }
+
 
     @Override
     public void scanDeviceCountChanged(int count) {
@@ -110,13 +175,135 @@ public class ScannerHelper implements IBScanListener {
 
     @Override
     public void scanDeviceOpenComplete(int deviceId, IBScanDevice device, IBScanException exception) {
+        NativeLogger.log("ALSKJDLASKDJALSDKJALSDKJDLKASJDLSAKJALKSDJAKSD");
         if (exception == null) {
             NativeLogger.log("Device " + deviceId + " opened successfully.");
+            mIBScanDevice = device;
+            mIBScanDevice.setScanDeviceListener(this);
+
+            if (events != null) {
+                events.onDeviceReadyForScanning(deviceId);
+            }
         } else {
             NativeLogger.log("Error opening device " + deviceId + ": " + exception.getMessage());
             if (events != null) {
                 events.onError("Error opening device: " + exception.getMessage());
             }
         }
+    }
+
+    // New Section: Required IBScanDeviceListener Methods
+    // ---------------------------------------------------
+
+    public void beginCaptureImage() {
+        if (mIBScanDevice == null || !mIBScanDevice.isOpened()) {
+            NativeLogger.log("Device is not opened for capturing.");
+            if (events != null) {
+                events.onError("Device is not opened for capturing.");
+            }
+            return;
+        }
+
+        try {
+            mIBScanDevice.beginCaptureImage(
+                    ImageType.FLAT_SINGLE_FINGER,
+                    IBScanDevice.ImageResolution.RESOLUTION_500,
+                    0
+            );
+            NativeLogger.log("NO ERROR - Capture started.");
+            if (events != null) {
+                events.onCaptureStarted();
+            }
+        } catch (IBScanException e) {
+            NativeLogger.log("Error starting capture: " + e.getMessage());
+            if (events != null) {
+                events.onError("Error starting capture: " + e.getMessage());
+            }
+        }
+    }
+
+    public void cancelCaptureImage() {
+        if (mIBScanDevice == null || !mIBScanDevice.isOpened()) {
+            NativeLogger.log("Device is not opened for cancelling capture.");
+            if (events != null) {
+                events.onError("Device is not opened for cancelling capture.");
+            }
+            return;
+        }
+
+        try {
+            mIBScanDevice.cancelCaptureImage();
+            NativeLogger.log("Capture cancelled.");
+            if (events != null) {
+                events.onCaptureCancelled();
+            }
+        } catch (IBScanException e) {
+            NativeLogger.log("Error cancelling capture: " + e.getMessage());
+            if (events != null) {
+                events.onError("Error cancelling capture: " + e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void deviceCommunicationBroken(IBScanDevice device) {
+        NativeLogger.log("Communication broken.");
+    }
+
+    @Override
+    public void deviceImagePreviewAvailable(IBScanDevice device, ImageData image) {
+        if (events != null) {
+            Bitmap bitmap = image.toBitmap();
+            events.onCaptureUpdated(bitmap);
+        }
+
+    }
+
+    @Override
+    public void deviceImageResultAvailable(IBScanDevice device, ImageData image, ImageType imageType, ImageData[] splitImageArray) {
+        if (events != null) {
+            Bitmap bitmap = image.toBitmap();
+            events.onCaptureCompleted(bitmap);
+        }
+    }
+
+    @Override
+    public void deviceFingerCountChanged(IBScanDevice device, FingerCountState fingerState) {
+        NativeLogger.log("Finger count changed: " + fingerState.name());
+    }
+
+    @Override
+    public void deviceFingerQualityChanged(IBScanDevice device, FingerQualityState[] fingerQualities) {
+        NativeLogger.log("Finger quality changed.");
+    }
+
+    @Override
+    public void deviceAcquisitionBegun(IBScanDevice device, ImageType imageType) {
+        NativeLogger.log("Acquisition begun for image type: " + imageType.name());
+    }
+
+    @Override
+    public void deviceAcquisitionCompleted(IBScanDevice device, ImageType imageType) {
+        NativeLogger.log("Acquisition completed for image type: " + imageType.name());
+    }
+
+    @Override
+    public void deviceImageResultExtendedAvailable(IBScanDevice device, IBScanException imageStatus, ImageData image, ImageType imageType, int detectedFingerCount, ImageData[] segmentImageArray, SegmentPosition[] segmentPositionArray) {
+        NativeLogger.log("Extended image result available.");
+    }
+
+    @Override
+    public void devicePlatenStateChanged(IBScanDevice device, PlatenState platenState) {
+        NativeLogger.log("Platen state changed to: " + platenState.name());
+    }
+
+    @Override
+    public void deviceWarningReceived(IBScanDevice device, IBScanException warning) {
+        NativeLogger.log("Warning received: " + warning.getMessage());
+    }
+
+    @Override
+    public void devicePressedKeyButtons(IBScanDevice device, int pressedKeyButtons) {
+        NativeLogger.log("Key buttons pressed: " + pressedKeyButtons);
     }
 }

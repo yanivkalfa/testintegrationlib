@@ -1,5 +1,7 @@
 package com.integrationtestlibs;
 
+import android.graphics.Bitmap;
+
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -12,7 +14,6 @@ public class ScannerModule extends ReactContextBaseJavaModule {
     public ScannerModule(ReactApplicationContext reactContext) {
         super(reactContext);
 
-        // Initialize ScannerHelper
         scannerHelper = new ScannerHelper(reactContext, new ScannerHelper.ScannerEvents() {
             @Override
             public void onDeviceConnected(int deviceId) {
@@ -30,8 +31,33 @@ public class ScannerModule extends ReactContextBaseJavaModule {
             }
 
             @Override
+            public void onDeviceReadyForScanning(int deviceId) {
+                sendEvent("onDeviceReadyForScanning", "Device is ready for scanning: " + deviceId);
+            }
+
+            @Override
             public void onPermissionDenied(int deviceId) {
                 sendEvent("onPermissionDenied", "Permission denied for device: " + deviceId);
+            }
+
+            @Override
+            public void onCaptureStarted() {
+                sendEvent("onCaptureStarted", "Capture started");
+            }
+
+            @Override
+            public void onCaptureCancelled() {
+                sendEvent("onCaptureCancelled", "Capture cancelled");
+            }
+
+            @Override
+            public void onCaptureUpdated(Bitmap image) {
+                sendEvent("onCaptureUpdated", imageToBase64(image));
+            }
+
+            @Override
+            public void onCaptureCompleted(Bitmap image) {
+                sendEvent("onCaptureCompleted", imageToBase64(image));
             }
 
             @Override
@@ -46,31 +72,28 @@ public class ScannerModule extends ReactContextBaseJavaModule {
         return "ScannerModule";
     }
 
-    /*
-    @ReactMethod
-    public void requestPermission(int deviceId) {
-        try {
-            if (scannerHelper.getIBScanInstance() != null) {
-                boolean hasPermission = scannerHelper.getIBScanInstance().hasPermission(deviceId);
-                if (hasPermission) {
-                    sendEvent("onPermissionGranted", "Permission already granted for device: " + deviceId);
-                } else {
-                    scannerHelper.getIBScanInstance().requestPermission(deviceId);
-                }
-            } else {
-                sendEvent("onError", "IBScan instance is not initialized.");
-            }
-        } catch (Exception e) {
-            sendEvent("onError", "Error requesting permission: " + e.getMessage());
-        }
-    }
-    */
-
     private void sendEvent(String eventName, String message) {
         ReactApplicationContext context = getReactApplicationContext();
         if (context.hasActiveCatalystInstance()) {
             context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                     .emit(eventName, message);
         }
+    }
+
+    private String imageToBase64(Bitmap image) {
+        java.io.ByteArrayOutputStream byteArrayOutputStream = new java.io.ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        return android.util.Base64.encodeToString(byteArray, android.util.Base64.DEFAULT);
+    }
+
+    @ReactMethod
+    public void beginCaptureImage() {
+        scannerHelper.beginCaptureImage();
+    }
+
+    @ReactMethod
+    public void cancelCaptureImage() {
+        scannerHelper.cancelCaptureImage();
     }
 }
