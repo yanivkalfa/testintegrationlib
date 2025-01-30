@@ -132,20 +132,19 @@ public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
                 events.onPermissionGranted(deviceId);
             }
 
-            //  printDeviceDetails(deviceId);
-
-
-            int deviceIndex = mIBScan.getDeviceIndexByUsbId(deviceId);
-            if (deviceIndex != -1) {
-                NativeLogger.log("found device for device id: " + deviceId + " At index: " + deviceIndex);
-            } else {
-                NativeLogger.log("Device not found for device id: " + deviceId);
-            }
-
-            // Attempt to open the device
             try {
-                NativeLogger.log("Opening device at index: " + deviceIndex);
-                mIBScanDevice = mIBScan.openDevice(deviceIndex);
+                if (mIBScanDevice == null || !mIBScanDevice.isOpened()) {
+                    int deviceIndex = mIBScan.getDeviceIndexByUsbId(deviceId);
+                    if (deviceIndex != -1) {
+                        NativeLogger.log("found device for device id: " + deviceId + " At index: " + deviceIndex);
+                    } else {
+                        NativeLogger.log("Device not found for device id: " + deviceId);
+                    }
+
+                    NativeLogger.log("Opening device at index: " + deviceIndex);
+                    mIBScanDevice = mIBScan.openDevice(deviceIndex);
+                }
+
                 mIBScanDevice.setScanDeviceListener(this);
                 NativeLogger.log("Device opened successfully: " + deviceId);
                 if (events != null) {
@@ -205,19 +204,30 @@ public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
         }
 
         try {
+            // Set decimation to reduce image size or quality
+            //mIBScanDevice.setProperty(IBScanDevice.PropertyId.ENABLE_DECIMATION, "TRUE");
+
+            // Set a smaller capture area threshold
+            mIBScanDevice.setProperty(IBScanDevice.PropertyId.CAPTURE_AREA_THRESHOLD, "12");
+
+            // Lower image processing threshold for faster processing
+            //mIBScanDevice.setProperty(IBScanDevice.PropertyId.RESERVED_IMAGE_PROCESS_THRESHOLD, "1");
+
+            // Adjust contrast level
+            mIBScanDevice.setContrast(1); // 50 is a mid-level contrast, can adjust 0-100
             mIBScanDevice.beginCaptureImage(
                     ImageType.FLAT_SINGLE_FINGER,
                     IBScanDevice.ImageResolution.RESOLUTION_500,
-                    0
+                    IBScanDevice.OPTION_AUTO_CAPTURE
             );
             NativeLogger.log("NO ERROR - Capture started.");
             if (events != null) {
                 events.onCaptureStarted();
             }
         } catch (IBScanException e) {
-            NativeLogger.log("Error starting capture: " + e.getMessage());
+            NativeLogger.log("Error starting capture: " + e.getType() + ", " + e.getMessage());
             if (events != null) {
-                events.onError("Error starting capture: " + e.getMessage());
+                events.onError("Error starting capture: " + e.getType() + ", " + e.getMessage());
             }
         }
     }
@@ -253,7 +263,7 @@ public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
     @Override
     public void deviceImagePreviewAvailable(IBScanDevice device, ImageData image) {
         if (events != null) {
-            Bitmap bitmap = image.toBitmap();
+            Bitmap bitmap = image.toBitmapScaled(200, 200);
             events.onCaptureUpdated(bitmap);
         }
 
@@ -262,7 +272,7 @@ public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
     @Override
     public void deviceImageResultAvailable(IBScanDevice device, ImageData image, ImageType imageType, ImageData[] splitImageArray) {
         if (events != null) {
-            Bitmap bitmap = image.toBitmap();
+            Bitmap bitmap = image.toBitmapScaled(200, 200);
             events.onCaptureCompleted(bitmap);
         }
     }

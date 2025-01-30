@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   NativeModules,
   SafeAreaView,
@@ -8,7 +8,9 @@ import {
   Button,
   DeviceEventEmitter,
   Image,
+  Alert
 } from 'react-native';
+import Canvas, { Image as CanvasImage } from 'react-native-canvas';
 
 const { ScannerModule } = NativeModules;
 
@@ -18,34 +20,41 @@ DeviceEventEmitter.addListener('onNativeLog', (event) => {
 });
 
 const FingerprintPreview = () => {
-  const [base64Image, setBase64Image] = useState(null);
+  const canvasRef = useRef(null);
+  const loadingRef = useRef(false);
+  const lastImgSrc = useRef(null);
 
   useEffect(() => {
+    const onCaptureUpdatedListener = DeviceEventEmitter.addListener(
+      'onCaptureUpdated', (base64Image) => {
+        if(loadingRef.current || lastImgSrc.current === base64Image) {
+            return false;
+        }
 
-    const onCaptureUpdatedListener = DeviceEventEmitter
-    .addListener('onCaptureUpdated', (base64Image) => setBase64Image(base64Image));
+        lastImgSrc.current = base64Image;
+        loadingRef.current = true;
 
-    const onCaptureCompletedListener = DeviceEventEmitter
-    .addListener('onCaptureCompleted',(base64Image) => setBase64Image(base64Image));
+        const canvas = canvasRef.current;
+        const context = canvas.getContext('2d');
+        const img = new CanvasImage(canvas);
+        img.src = `data:image/png;base64,${base64Image}`;
+        img.addEventListener('load', () => {
+          context.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+          context.drawImage(img, 0, 0, canvas.width, canvas.height); // Draw the image
+          loadingRef.current = false;
+        });
+      }
+    );
 
-    // Cleanup listeners on unmount
+    // Cleanup listeners
     return () => {
       onCaptureUpdatedListener.remove();
-      onCaptureCompletedListener.remove();
     };
   }, []);
 
   return (
     <View style={styles.placeholder}>
-      {base64Image ? (
-        <Image
-          source={{ uri: `data:image/png;base64,${base64Image}` }}
-          style={styles.previewImage}
-          resizeMode="contain"
-        />
-      ) : (
-        <Text style={styles.placeholderText}>Fingerprint Preview</Text>
-      )}
+      <Canvas ref={canvasRef} style={styles.canvas} />
     </View>
   );
 };
@@ -156,7 +165,7 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     width: '80%',
-    height: 200,
+    height: 300,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 10,
