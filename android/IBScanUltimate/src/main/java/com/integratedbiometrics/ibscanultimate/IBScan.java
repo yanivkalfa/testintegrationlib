@@ -59,7 +59,7 @@ import android.os.Build;
 import android.util.Log;
 
 import org.libusb.LibUsbManager;
-import com.utils.NativeLogger;
+import com.utils.Emitter;
 import android.os.Bundle;
  
 /**
@@ -277,26 +277,26 @@ public class IBScan
         List<DeviceDesc> devices = new ArrayList<>();
 
         if (m_instance == null) {
-            NativeLogger.log("IBScan instance is null. Cannot fetch devices.");
+            Emitter.log("IBScan instance is null. Cannot fetch devices.");
             return devices;
         }
 
         try {
             int deviceCount = getDeviceCount();
-            NativeLogger.log("Number of connected devices: " + deviceCount);
+            Emitter.log("Number of connected devices: " + deviceCount);
 
             for (int i = 0; i < deviceCount; i++) {
                 DeviceDesc deviceDesc = getDeviceDescription(i);
                 devices.add(deviceDesc);
 
-                NativeLogger.log("Device " + i + " Details:");
-                NativeLogger.log("Device ID: " + deviceDesc.deviceId);
-                NativeLogger.log("Product Name: " + deviceDesc.productName);
-                NativeLogger.log("Serial Number: " + deviceDesc.serialNumber);
-                NativeLogger.log("Interface Type: " + deviceDesc.interfaceType);
+                Emitter.log("Device " + i + " Details:");
+                Emitter.log("Device ID: " + deviceDesc.deviceId);
+                Emitter.log("Product Name: " + deviceDesc.productName);
+                Emitter.log("Serial Number: " + deviceDesc.serialNumber);
+                Emitter.log("Interface Type: " + deviceDesc.interfaceType);
             }
         } catch (IBScanException e) {
-            NativeLogger.log("Error fetching device details: " + e.getMessage());
+            Emitter.log("Error fetching device details: " + e.getMessage());
         }
 
         return devices;
@@ -309,7 +309,7 @@ public class IBScan
      */
     public int getDeviceIndexByUsbId(int deviceId) {
         if (m_instance == null) {
-            NativeLogger.log("IBScan instance is null. Cannot search for devices.");
+            Emitter.log("IBScan instance is null. Cannot search for devices.");
             return -1;
         }
 
@@ -320,14 +320,14 @@ public class IBScan
                 DeviceDesc deviceDesc = getDeviceDescription(i);
 
                 if (deviceDesc.deviceId == deviceId) {
-                    NativeLogger.log("Found device with ID: " + deviceId + " at index: " + i);
+                    Emitter.log("Found device with ID: " + deviceId + " at index: " + i);
                     return i;
                 }
             }
 
-            NativeLogger.log("No device found with ID: " + deviceId);
+            Emitter.log("No device found with ID: " + deviceId);
         } catch (IBScanException e) {
-            NativeLogger.log("Error searching for device: " + e.getMessage());
+            Emitter.log("Error searching for device: " + e.getMessage());
         }
 
         return -1; // Return -1 if the device is not found
@@ -355,18 +355,18 @@ public class IBScan
 
     public boolean deviceHasPermission(UsbDevice device) {
         if (device == null) {
-            NativeLogger.log("Device is null. Cannot check permission.");
+            Emitter.log("Device is null. Cannot check permission.");
             return false;
         }
 
         UsbManager usbManager = (UsbManager) m_context.getSystemService(Context.USB_SERVICE);
         if (usbManager == null) {
-            NativeLogger.log("UsbManager is null. Cannot check permission.");
+            Emitter.log("UsbManager is null. Cannot check permission.");
             return false;
         }
 
         boolean hasPermission = usbManager.hasPermission(device);
-        NativeLogger.log("Permission for device (" + device.getDeviceName() + "): " + hasPermission);
+        Emitter.log("Permission for device (" + device.getDeviceName() + "): " + hasPermission);
         return hasPermission;
     }
 
@@ -381,21 +381,21 @@ public class IBScan
                 Bundle extras = intent.getExtras();
                 if (extras != null) {
                     for (String key : extras.keySet()) {
-                        NativeLogger.log("Dynamic Receiver Extra: " + key + " = " + extras.get(key));
+                        Emitter.log("Dynamic Receiver Extra: " + key + " = " + extras.get(key));
                     }
                 } else {
-                    NativeLogger.log("Dynamic Receiver: No extras in intent.");
+                    Emitter.log("Dynamic Receiver: No extras in intent.");
                 }
 
                 if (ACTION_USB_PERMISSION.equals(action)) {
-                    NativeLogger.log("Dynamic Receiver: ACTION_USB_PERMISSION received.");
+                    Emitter.log("Dynamic Receiver: ACTION_USB_PERMISSION received.");
 
                     // Use deviceHasPermission instead of relying on extras
                     if (deviceHasPermission(device)) {
-                        NativeLogger.log("Dynamic Receiver: Permission confirmed via deviceHasPermission.");
+                        Emitter.log("Dynamic Receiver: Permission confirmed via deviceHasPermission.");
                         callbackScanDevicePermissionGranted(deviceId, true);
                     } else {
-                        NativeLogger.log("Dynamic Receiver: Permission denied via deviceHasPermission.");
+                        Emitter.log("Dynamic Receiver: Permission denied via deviceHasPermission.");
                         callbackScanDevicePermissionGranted(deviceId, false);
                     }
 
@@ -411,7 +411,7 @@ public class IBScan
         } else {
             this.m_context.registerReceiver(dynamicReceiver, filter);
         }
-        NativeLogger.log("Dynamic Receiver: Registered for ACTION_USB_PERMISSION.");
+        Emitter.log("Dynamic Receiver: Registered for ACTION_USB_PERMISSION.");
     }
 
     /**
@@ -429,13 +429,13 @@ public class IBScan
         /* Request permission with the USB manager. */
         final UsbDevice device = findDevice(deviceId);
         if (device != null) {
-            NativeLogger.log("Requesting permission for device: " + device.getDeviceName());
+            Emitter.log("Requesting permission for device: " + device.getDeviceName());
 
             /* Create intent and request permission with the USB manager. */
             final UsbManager manager = (UsbManager) this.m_context.getSystemService(Context.USB_SERVICE);
 
             if (manager == null) {
-                NativeLogger.log("UsbManager is null. Cannot request permission.");
+                Emitter.log("UsbManager is null. Cannot request permission.");
                 return;
             }
 
@@ -455,12 +455,12 @@ public class IBScan
                 permissionIntent = PendingIntent.getBroadcast(this.m_context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             }
 
-            NativeLogger.log("Requesting permission for device: " + device.getDeviceName() +
+            Emitter.log("Requesting permission for device: " + device.getDeviceName() +
                     ", VendorId: " + device.getVendorId() +
                     ", ProductId: " + device.getProductId());
             manager.requestPermission(device, permissionIntent);
         } else {
-            NativeLogger.log("Device not found for deviceId: " + deviceId);
+            Emitter.log("Device not found for deviceId: " + deviceId);
         }
     }
     
@@ -991,7 +991,7 @@ public class IBScan
 
                 /* Receive event about device attachment. */
                 if (action.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
-                    NativeLogger.log("ACTION_USB_DEVICE_ATTACHED");
+                    Emitter.log("ACTION_USB_DEVICE_ATTACHED");
                     UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     if (device != null && isScanDevice(device)) {
                         callbackScanDeviceAttached(device.getDeviceId());
@@ -999,7 +999,7 @@ public class IBScan
                 }
                 /* Receive event about device detachment. */
                 else if (action.equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
-                    NativeLogger.log("ACTION_USB_DEVICE_DETACHED");
+                    Emitter.log("ACTION_USB_DEVICE_DETACHED");
                     UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     if (device != null && isScanDevice(device)) {
                         callbackScanDeviceDetached(device.getDeviceId());
@@ -1007,7 +1007,7 @@ public class IBScan
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                NativeLogger.log("An unexpected error occurred: " + e.getMessage());
+                Emitter.log("An unexpected error occurred: " + e.getMessage());
             }
         }
     };
@@ -1052,7 +1052,7 @@ public class IBScan
 		{
 	        if (ibScan.m_listener != null)
 	        {
-                NativeLogger.log("ACTION_USB_PERMISSION - " + deviceIndex);
+                Emitter.log("ACTION_USB_PERMISSION - " + deviceIndex);
 	            ibScan.m_listener.scanDevicePermissionGranted(deviceIndex, granted);
 	        }
 		}

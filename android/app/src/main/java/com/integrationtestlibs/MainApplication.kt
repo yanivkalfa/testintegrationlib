@@ -16,7 +16,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactInstanceManager.ReactInstanceEventListener
-import com.utils.NativeLogger
+import com.utils.Emitter
 
 class MainApplication : Application(), ReactApplication {
 
@@ -26,6 +26,7 @@ class MainApplication : Application(), ReactApplication {
                 PackageList(this).packages.apply {
                     // Register your custom ScannerPackage here
                     add(ScannerPackage())
+                    add(SchedulerPackage())
                 }
 
             override fun getJSMainModuleName(): String = "index"
@@ -52,8 +53,8 @@ class MainApplication : Application(), ReactApplication {
         if (existingContext != null) {
             Log.d("MainApplication", "aaaaaaaaaaaaaaaaaaaaaaaaaaaa")
             if (existingContext is ReactApplicationContext) {
-                NativeLogger.initialize(existingContext)
-                NativeLogger.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb!")
+                Emitter.initialize(existingContext)
+                Emitter.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb!")
             } else {
                 Log.e("MainApplication", "ccccccccccccccccccccccccccccccccccccccc")
             }
@@ -63,8 +64,8 @@ class MainApplication : Application(), ReactApplication {
                 override fun onReactContextInitialized(reactContext: ReactContext) {
                     Log.d("MainApplication", "dddddddddddddddddddddddddddddddddd")
                     if (reactContext is ReactApplicationContext) {
-                        NativeLogger.initialize(reactContext)
-                        NativeLogger.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+                        Emitter.initialize(reactContext)
+                        Emitter.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
                     } else {
                         Log.e("MainApplication", "ffffffffffffffffffffffffffffffffff")
                     }
