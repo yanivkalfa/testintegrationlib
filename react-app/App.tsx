@@ -7,11 +7,13 @@ import {PersistGate} from 'redux-persist/integration/react';
 import {store, persistor} from './store/Store';
 import {RootStackParamList} from './config/types';
 
-import Logger from './containers/Logger/Logger';
 import Home from './containers/Home/Home';
-import Bodies from './containers/Bodies/Bodies';
+import Atzada from './containers/Atzada/Atzada';
+import Details from './containers/Details/Details';
 
-import './SyncBodies';
+import './SyncMachals';
+import './NetworkManager';
+import './Logger';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -20,10 +22,10 @@ export default function App() {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
-          <Logger />
           <Stack.Navigator initialRouteName="Home">
             <Stack.Screen name="Home" component={Home} />
-            <Stack.Screen name="Bodies" component={Bodies} />
+            <Stack.Screen name="Atzada" component={Atzada} />
+            <Stack.Screen name="Details" component={Details} />
           </Stack.Navigator>
         </NavigationContainer>
       </PersistGate>

@@ -44,38 +44,47 @@ class MainApplication : Application(), ReactApplication {
         super.onCreate()
         SoLoader.init(this, OpenSourceMergedSoMapping)
 
-        Log.d("MainApplication", "onCreate called")
+        Log.d("MainApplication", "onCreate called - Application initialization started")
 
         val instanceManager: ReactInstanceManager = reactNativeHost.reactInstanceManager
+
+        // Log the ReactInstanceManager current status
+        Log.d("MainApplication", "ReactInstanceManager initialized: $instanceManager")
+        Log.d("MainApplication", "Current ReactContext: ${instanceManager.currentReactContext}")
 
         // Check if ReactContext is already initialized
         val existingContext = instanceManager.currentReactContext
         if (existingContext != null) {
-            Log.d("MainApplication", "aaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+            Log.d("MainApplication", "Existing ReactContext found")
             if (existingContext is ReactApplicationContext) {
+                Log.d("MainApplication", "Initializing Emitter with existing ReactApplicationContext")
                 Emitter.initialize(existingContext)
-                Emitter.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb!")
+                Emitter.log("Emitter initialized successfully with existing context")
             } else {
-                Log.e("MainApplication", "ccccccccccccccccccccccccccccccccccccccc")
+                Log.e("MainApplication", "Invalid ReactContext type found: ${existingContext.javaClass.name}")
             }
         } else {
             // Add a listener for ReactInstance initialization
+            Log.d("MainApplication", "No existing ReactContext, adding ReactInstanceEventListener")
             instanceManager.addReactInstanceEventListener(object : ReactInstanceEventListener {
                 override fun onReactContextInitialized(reactContext: ReactContext) {
-                    Log.d("MainApplication", "dddddddddddddddddddddddddddddddddd")
+                    Log.d("MainApplication", "ReactContext initialized via listener")
                     if (reactContext is ReactApplicationContext) {
+                        Log.d("MainApplication", "Initializing Emitter with new ReactApplicationContext")
                         Emitter.initialize(reactContext)
-                        Emitter.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+                        Emitter.log("Emitter initialized successfully with new context")
                     } else {
-                        Log.e("MainApplication", "ffffffffffffffffffffffffffffffffff")
+                        Log.e("MainApplication", "Invalid ReactContext type found via listener: ${reactContext.javaClass.name}")
                     }
                 }
             })
 
             // Start creating the ReactContext if not already started
             if (!instanceManager.hasStartedCreatingInitialContext()) {
-                Log.d("MainApplication", "Starting ReactInstanceManager...")
+                Log.d("MainApplication", "Starting ReactInstanceManager to create ReactContext")
                 instanceManager.createReactContextInBackground()
+            } else {
+                Log.d("MainApplication", "ReactInstanceManager already started creating initial context")
             }
         }
 
@@ -83,9 +92,12 @@ class MainApplication : Application(), ReactApplication {
             Log.d("MainApplication", "Loading new architecture entry point")
             try {
                 load()
+                Log.d("MainApplication", "New architecture entry point loaded successfully")
             } catch (e: RuntimeException) {
                 Log.e("MainApplication", "Error loading new architecture entry point", e)
             }
         }
+
+        Log.d("MainApplication", "onCreate completed - Application initialization finished")
     }
 }
