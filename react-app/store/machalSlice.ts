@@ -5,7 +5,6 @@ import RNFS from 'react-native-fs';
 
 const initialState: Partial<Machal> = {};
 
-// Slice definition
 export const machalsSlice = createSlice({
   name: 'machals',
   initialState,
@@ -26,7 +25,7 @@ export const machalsSlice = createSlice({
         updatedAt: new Date().toISOString(),
       };
     },
-    cancelMachal: (state) => {
+    resetMachal: (state) => {
       return {};
     },
     addOrUpdateFingerPrint: (state, action: PayloadAction<{ fingerIndex: number; fingerPrint: FingerPrint }>) => {
@@ -52,7 +51,7 @@ export const machalsSlice = createSlice({
   },
 });
 
-const cancelMachalThunk = createAsyncThunk(
+const resetMachalThunk = createAsyncThunk(
   'machals/cancelMachalThunk',
   async (_, { dispatch, getState }) => {
     const state = getState() as { machals: Partial<Machal> };
@@ -72,7 +71,7 @@ const cancelMachalThunk = createAsyncThunk(
       );
     }
 
-    dispatch(cancelMachal());
+    dispatch(resetMachal());
   }
 );
 
@@ -103,13 +102,13 @@ const removeFingerPrintThunk = createAsyncThunk(
 export const {
   startMachal,
   updateCurrentMachal,
-  cancelMachal,
+  resetMachal,
   addOrUpdateFingerPrint,
   removeFingerPrint,
 } = machalsSlice.actions;
 
 export {
-  cancelMachalThunk,
+  resetMachalThunk,
   removeFingerPrintThunk,
 };
 
