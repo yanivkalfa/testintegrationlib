@@ -10,6 +10,11 @@ import {RootStackParamList} from './config/types';
 import Home from './containers/Home/Home';
 import Atzada from './containers/Atzada/Atzada';
 import Details from './containers/Details/Details';
+import ScanModeSelector from './containers/ScanModeSelector/ScanModeSelector';
+import ScanFingerPrintSelector from './containers/ScanFingerPrintSelector/ScanFingerPrintSelector';
+import ScanFinger from './containers/ScanFinger/ScanFinger';
+
+import Auth from './containers/Auth/Auth';
 
 import './SyncMachals';
 import './NetworkManager';
@@ -18,12 +23,16 @@ import './Logger';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const linking: LinkingOptions<RootStackParamList> = {
-  prefixes: ['mezah://'],
+  prefixes: ['mezah://', 'msauth://com.integrationtestlibs'],
   config: {
     screens: {
       Home: '',
       Atzada: 'atzada',
       Details: 'details',
+      Auth: 'auth',
+      ScanModeSelector: 'ScanModeSelector',
+      ScanFingerPrintSelector: 'ScanFingerPrintSelector',
+      ScanFinger: 'ScanFinger',
     },
   },
 };
@@ -37,6 +46,16 @@ export default function App() {
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Atzada" component={Atzada} />
             <Stack.Screen name="Details" component={Details} />
+            <Stack.Screen
+              name="ScanModeSelector"
+              component={ScanModeSelector}
+            />
+            <Stack.Screen
+              name="ScanFingerPrintSelector"
+              component={ScanFingerPrintSelector}
+            />
+            <Stack.Screen name="ScanFinger" component={ScanFinger} />
+            <Stack.Screen name="Auth" component={Auth} />
           </Stack.Navigator>
         </NavigationContainer>
       </PersistGate>

@@ -15,7 +15,6 @@ import {updateConfig} from '../../store/configsSlice';
 import {checkSyncStatus} from '../../SyncMachals';
 import {styles} from './Home.styles';
 
-import {Button} from '@react-navigation/elements';
 import {startMachal} from '../../store/machalSlice';
 
 const App = (): React.JSX.Element => {
@@ -45,6 +44,10 @@ const App = (): React.JSX.Element => {
   const handlePress = (type: MachalType) => {
     dispatch(startMachal({type}));
     navigation.navigate('Atzada');
+  };
+
+  const login = () => {
+    navigation.navigate('Auth');
   };
 
   return (
@@ -89,6 +92,9 @@ const App = (): React.JSX.Element => {
             style={styles.button}
             onPress={() => handlePress(MachalType.unknownInjured)}>
             <Text style={styles.buttonText}>פצוע אלמוני</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => login()}>
+            <Text style={styles.buttonText}>התחבר</Text>
           </TouchableOpacity>
         </View>
       </View>

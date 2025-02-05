@@ -21,6 +21,7 @@
     "react-native": "0.76.6",
     "react-native-canvas": "^0.1.40",
     "react-native-fs": "^2.20.0",
+    "react-native-msal": "^4.0.4",
     "react-native-safe-area-context": "^5.1.0",
     "react-native-screens": "^4.6.0",
     "react-native-vision-camera": "^4.6.3",

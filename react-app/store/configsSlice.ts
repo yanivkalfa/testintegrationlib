@@ -5,15 +5,17 @@ const initialState: ConfigState = {
   imgFolderCreated: false,
   isOnline: true,
   isLoggedIn: true,
+  isDeviceConnected: false,
+  connectedDeviceName: ''
 };
 
 export const configSlice = createSlice({
   name: 'appConfig',
   initialState,
   reducers: {
-    updateConfig: (state: ConfigState, action: PayloadAction<UpdateConfigPayload>) => {
+    updateConfig: (state, action: PayloadAction<UpdateConfigPayload>) => {
       const { name, value } = action.payload;
-      state[name] = value;
+      (state[name] as ConfigState[typeof name]) = value;
     },
   },
 });

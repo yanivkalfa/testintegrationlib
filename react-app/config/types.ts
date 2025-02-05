@@ -2,18 +2,24 @@ export type RootStackParamList = {
   Home: undefined;
   Atzada: undefined;
   Details: undefined;
+  Auth: undefined;
+  ScanModeSelector: undefined;
+  ScanFingerPrintSelector: undefined;
+  ScanFinger: undefined
 };
 
 export type ConfigState = {
   imgFolderCreated: boolean;
   isOnline: boolean;
   isLoggedIn: boolean;
+  isDeviceConnected: boolean;
+  connectedDeviceName: string;
 }
 
-export type UpdateConfigPayload = {
-  name: keyof ConfigState;
-  value: boolean;
-}
+export type UpdateConfigPayload<K extends keyof ConfigState = keyof ConfigState> = {
+  name: K;
+  value: ConfigState[K];
+};
 
 export type FingerPrint = {
   fingerIndex: number;

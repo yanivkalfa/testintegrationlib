@@ -266,13 +266,12 @@ public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
             Bitmap bitmap = image.toBitmapScaled(200, 200);
             events.onCaptureUpdated(bitmap);
         }
-
     }
 
     @Override
     public void deviceImageResultAvailable(IBScanDevice device, ImageData image, ImageType imageType, ImageData[] splitImageArray) {
         if (events != null) {
-            Bitmap bitmap = image.toBitmapScaled(200, 200);
+            Bitmap bitmap = image.toBitmap();
             events.onCaptureCompleted(bitmap);
         }
     }

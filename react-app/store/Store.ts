@@ -1,6 +1,7 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { createSelector } from 'reselect';
 import machals from './machalsSlice';
+import machal from './machalSlice';
 import appConfig from './configsSlice';
 import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,10 +11,10 @@ import { ConfigState, Machal } from '../config/types';
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['machals', 'appConfig'],
+  whitelist: ['machals', 'machal', 'appConfig'],
 };
 
-const rootReducer = combineReducers({ machals, appConfig });
+const rootReducer = combineReducers({ machals, machal, appConfig });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
