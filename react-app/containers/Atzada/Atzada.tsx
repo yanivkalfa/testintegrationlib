@@ -13,16 +13,31 @@ import {updateCurrentMachal} from '../../store/machalSlice';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from '../../config/types';
 import {getRandomIDNumber} from '../../utils/math.utils';
+import {RootState, selectMachalProp} from '../../store/Store';
 
 const Atzada = () => {
-  const dispatch = useDispatch();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const [scannedCode, setScannedCode] = useState<string | null>(null);
+  const dispatch = useDispatch();
+  const machalType = useSelector((state: RootState) =>
+    selectMachalProp(state, 'type'),
+  );
+  const machalId = useSelector((state: RootState) =>
+    selectMachalProp(state, 'id'),
+  );
+
+  const [fnishedScanning, setFnishedScanning] = useState<boolean>(false);
+  const [scannedCode, setScannedCode] = useState<string | null>(machalId);
   const device = useCameraDevice('back');
   const {hasPermission, requestPermission} = useCameraPermission();
 
   const codesScanned = useRef<number>(0);
   const codeFrequencies = useRef<{[value: string]: number}>({});
+
+  useEffect(() => {
+    if (!machalType) {
+      navigation.navigate('Home');
+    }
+  }, []);
 
   useEffect(() => {
     if (!hasPermission) {
@@ -63,6 +78,7 @@ const Atzada = () => {
         codesScanned.current = 0;
         const mostFrequentCode = findMostFrequentCode(codeFrequencies.current);
         setScannedCode(mostFrequentCode);
+        setFnishedScanning(true);
         codeFrequencies.current = {};
       }
     },
@@ -91,7 +107,7 @@ const Atzada = () => {
       <Camera
         style={styles.qrScanner}
         device={device}
-        isActive={!scannedCode}
+        isActive={!fnishedScanning}
         codeScanner={codeScanner}
       />
 

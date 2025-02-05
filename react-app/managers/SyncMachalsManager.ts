@@ -5,9 +5,9 @@ import {
 
 const {Scheduler} = NativeModules;
 
-import {store, selectUnsyncedMachals} from './store/Store';
-import { Machal, Machals } from './config/types';
-import { updateMachal } from './store/machalsSlice';
+import {store, selectUnsyncedMachals} from '../store/Store';
+import { Machal, Machals } from '../config/types';
+import { updateMachal } from '../store/machalsSlice';
 
 // todo: replace with real call to server
 const syncMachalToServer = async (machal: Machal): Promise<boolean> => {

@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 
 import {MachalType, RootStackParamList} from '../../config/types';
-import {createImagesFolder} from '../../FileManager';
+import {createImagesFolder} from '../../managers/FileManager';
 
 import {
   RootState,
@@ -12,10 +12,11 @@ import {
   selectUnsyncedMachals,
 } from '../../store/Store';
 import {updateConfig} from '../../store/configsSlice';
-import {checkSyncStatus} from '../../SyncMachals';
+import {checkSyncStatus} from '../../managers/SyncMachalsManager';
 import {styles} from './Home.styles';
 
 import {startMachal} from '../../store/machalSlice';
+import {initClientMsal, isUserLogged} from '../../managers/AuthManager';
 
 const App = (): React.JSX.Element => {
   const dispatch = useDispatch();
@@ -41,13 +42,21 @@ const App = (): React.JSX.Element => {
     checkSyncStatus(isOnline, isLoggedIn, unsyncedMachals);
   }, [isOnline, isLoggedIn, unsyncedMachals]);
 
+  useEffect(() => {
+    const initialize = async () => {
+      await initClientMsal();
+      const isLogged = await isUserLogged();
+      if (isLogged) {
+        dispatch(updateConfig({name: 'isLoggedIn', value: isLogged}));
+      }
+    };
+
+    initialize();
+  }, []);
+
   const handlePress = (type: MachalType) => {
     dispatch(startMachal({type}));
     navigation.navigate('Atzada');
-  };
-
-  const login = () => {
-    navigation.navigate('Auth');
   };
 
   return (
@@ -93,9 +102,6 @@ const App = (): React.JSX.Element => {
             onPress={() => handlePress(MachalType.unknownInjured)}>
             <Text style={styles.buttonText}>פצוע אלמוני</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => login()}>
-            <Text style={styles.buttonText}>התחבר</Text>
-          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -103,17 +109,3 @@ const App = (): React.JSX.Element => {
 };
 
 export default App;
-
-// return (
-//   <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-//     <Text>Home Screen</Text>
-//     <Button onPress={handlePress}>Go to Bodies</Button>
-//   </View>
-// );
-
-{
-  /* <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-        <Text>Counter: {counterValue}</Text>
-        <Button onPress={() => dispatch(increment())}>Increment Counter</Button>
-      </View> */
-}

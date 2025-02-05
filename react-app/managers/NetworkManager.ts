@@ -1,7 +1,7 @@
 import NetInfo from '@react-native-community/netinfo';
 
-import {store, selectAppConfigsValue} from './store/Store';
-import { updateConfig } from './store/configsSlice';
+import {store, selectAppConfigsValue} from '../store/Store';
+import { updateConfig } from '../store/configsSlice';
 
 const IS_ONLINE = 'isOnline';
 

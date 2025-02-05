@@ -14,10 +14,9 @@ import ScanModeSelector from './containers/ScanModeSelector/ScanModeSelector';
 import ScanFingerPrintSelector from './containers/ScanFingerPrintSelector/ScanFingerPrintSelector';
 import ScanFinger from './containers/ScanFinger/ScanFinger';
 
-import Auth from './containers/Auth/Auth';
-
-import './SyncMachals';
-import './NetworkManager';
+import './managers/SyncMachalsManager';
+import './managers/NetworkManager';
+import './managers/AuthManager';
 import './Logger';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -29,7 +28,6 @@ const linking: LinkingOptions<RootStackParamList> = {
       Home: '',
       Atzada: 'atzada',
       Details: 'details',
-      Auth: 'auth',
       ScanModeSelector: 'ScanModeSelector',
       ScanFingerPrintSelector: 'ScanFingerPrintSelector',
       ScanFinger: 'ScanFinger',
@@ -55,7 +53,6 @@ export default function App() {
               component={ScanFingerPrintSelector}
             />
             <Stack.Screen name="ScanFinger" component={ScanFinger} />
-            <Stack.Screen name="Auth" component={Auth} />
           </Stack.Navigator>
         </NavigationContainer>
       </PersistGate>

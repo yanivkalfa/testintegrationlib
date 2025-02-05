@@ -33,19 +33,33 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 12,
   },
-  iconRow: {
+  iconContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
+    flexWrap: 'wrap', // Wrap buttons to the next line when needed
+    padding: 8,
+    justifyContent: 'space-evenly', // Even spacing between buttons
   },
   iconButton: {
+    flexBasis: '29%', // Buttons take up nearly one-third of the container
+    marginBottom: 12,
+    paddingVertical: 12,
+    backgroundColor: '#e8f0fe', // Default background color
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 8,
-    backgroundColor: '#e8f0fe',
-    borderRadius: 8,
-    flex: 1,
-    marginHorizontal: 4,
+    borderWidth: 1, // Default border width
+    borderColor: '#e0e0e0', // Default border color (unselected)
+  },
+  selectedButton: {
+    borderColor: 'blue',
+  },
+  iconText: {
+    color: '#000',
+    fontSize: 14,
+  },
+  iconTextSelected: {
+    color: 'blue',
+    fontSize: 14,
   },
   label: {
     marginTop: 16,
@@ -64,6 +78,12 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     flex: 1,
     marginHorizontal: 4,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  genderButtonSelected: {
+    color: 'blue',
+    borderColor: 'blue',
   },
   input: {
     backgroundColor: '#f9f9f9',

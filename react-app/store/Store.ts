@@ -36,11 +36,20 @@ export type AppDispatch = typeof store.dispatch;
 const selectMachalId = (_: RootState, id: string) => id;
 export const selectAppConfigsValue = (state: RootState, configName: keyof ConfigState) => state.appConfig[configName];
 export const selectMachals = (state: RootState) => state.machals;
+export const selectMachal = (state: RootState) => state.machal;
 export const selectUnsyncedMachals = createSelector(
   [selectMachals],
-(machals) => machals.filter((machal) => machal.serverSyncStatus === 'needSync')
+  (machals) => machals.filter((machal) => machal.serverSyncStatus === 'needSync')
 );
 export const selectMachalsById = createSelector(
   [selectMachals, selectMachalId],
   (machals, id) => machals.find((machal: Machal) => machal.id === id)
 );
+
+export const selectMachalProp = <K extends keyof Machal>(
+  { machal }: RootState,
+  property: K
+): Machal[K] | null => {
+  const value = machal[property];
+  return value === undefined ? null : value;
+};
