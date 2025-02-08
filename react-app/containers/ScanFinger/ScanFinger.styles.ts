@@ -1,53 +1,13 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
+import globalStyles from '../../global.styles';
+
+const {flex, justifyContent, alignItems, ...actionButton} =
+  globalStyles.actionButton;
 
 export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-    padding: 16,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  backButton: {
-    padding: 8,
-  },
-  backButtonText: {
-    fontSize: 20,
-    color: '#007BFF',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#555',
-  },
-  fingerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
   fingerprintContainer: {
     alignItems: 'center',
     marginBottom: 24,
-  },
-  fingerprintImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
-    backgroundColor: '#fff',
   },
   fingerprintText: {
     color: '#aaa',
@@ -72,29 +32,12 @@ export const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#28a745',
   },
-  actionButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  secondaryButton: {
-    flex: 1,
-    marginHorizontal: 4,
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#007BFF',
-    backgroundColor: '#fff',
-    alignItems: 'center',
-  },
-  secondaryButtonText: {
-    fontSize: 14,
-    color: '#007BFF',
+  continueButtonContainer: {
+    width: '100%',
+    marginTop: 10,
   },
   continueButton: {
-    backgroundColor: '#007BFF',
-    borderRadius: 8,
-    padding: 16,
+    ...actionButton,
     alignItems: 'center',
   },
   continueButtonText: {

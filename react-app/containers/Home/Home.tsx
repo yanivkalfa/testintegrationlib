@@ -6,17 +6,21 @@ import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {MachalType, RootStackParamList} from '../../config/types';
 import {createImagesFolder} from '../../managers/FileManager';
 
-import {
-  RootState,
-  selectMachals,
-  selectUnsyncedMachals,
-} from '../../store/Store';
+import {RootState, selectUnsyncedMachals} from '../../store/Store';
 import {updateConfig} from '../../store/configsSlice';
 import {checkSyncStatus} from '../../managers/SyncMachalsManager';
 import {styles} from './Home.styles';
 
 import {startMachal} from '../../store/machalSlice';
-import {initClientMsal, isUserLogged} from '../../managers/AuthManager';
+import {
+  getAccessToken,
+  initClientMsal,
+  login,
+  logout,
+  updateIsLoggedIn,
+} from '../../managers/AuthManager';
+import {getMySites} from '../../api/sitesApi';
+import {getCurrSiteId} from '../../managers/SitesManager';
 
 const App = (): React.JSX.Element => {
   const dispatch = useDispatch();
@@ -45,9 +49,17 @@ const App = (): React.JSX.Element => {
   useEffect(() => {
     const initialize = async () => {
       await initClientMsal();
-      const isLogged = await isUserLogged();
-      if (isLogged) {
-        dispatch(updateConfig({name: 'isLoggedIn', value: isLogged}));
+      //logout();
+      const accessToken = await getAccessToken();
+      //console.log('accessToken', accessToken);
+      if (!accessToken) {
+        //login();
+      }
+      if (accessToken) {
+        await updateIsLoggedIn(true);
+        console.log('ggggggggggggggg', await getCurrSiteId());
+        //const res = await getMySites();
+        //console.log('res', res);
       }
     };
 
@@ -94,12 +106,12 @@ const App = (): React.JSX.Element => {
         <View style={styles.buttons}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => handlePress(MachalType.deadSolider)}>
+            onPress={() => handlePress(MachalType.Machal)}>
             <Text style={styles.buttonText}>חלל</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => handlePress(MachalType.unknownInjured)}>
+            onPress={() => handlePress(MachalType.Wounded)}>
             <Text style={styles.buttonText}>פצוע אלמוני</Text>
           </TouchableOpacity>
         </View>

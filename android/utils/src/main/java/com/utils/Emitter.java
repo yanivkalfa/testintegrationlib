@@ -42,23 +42,61 @@ public class Emitter {
     }
 
     public static void sendEvent(String eventName, String message) {
-        Log.d(TAG, "sendEvent() called with eventName: " + eventName + ", message: " + message);
+        sendEventInternal(eventName, "message", message);
+    }
 
+    public static void sendEvent(String eventName, boolean value) {
+        sendEventInternal(eventName, "value", value);
+    }
+
+    public static void sendEvent(String eventName, int value) {
+        sendEventInternal(eventName, "value", value);
+    }
+
+    public static void sendEvent(String eventName, double value) {
+        sendEventInternal(eventName, "value", value);
+    }
+
+    public static void sendEvent(String eventName, WritableMap map) {
+        if (reactContext != null) {
+            try {
+                reactContext
+                        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                        .emit(eventName, map);
+
+                Log.d(TAG, "Event sent to JS: eventName=" + eventName);
+            } catch (Exception e) {
+                Log.e(TAG, "Error while sending event to JS: eventName=" + eventName, e);
+            }
+        } else {
+            Log.e(TAG, "ReactApplicationContext is null. Event not sent: eventName=" + eventName);
+        }
+    }
+
+    private static void sendEventInternal(String eventName, String key, Object value) {
         if (reactContext != null) {
             try {
                 WritableMap eventMap = new WritableNativeMap();
-                eventMap.putString("message", message);
+                if (value instanceof Boolean) {
+                    eventMap.putBoolean(key, (Boolean) value);
+                } else if (value instanceof Integer) {
+                    eventMap.putInt(key, (Integer) value);
+                } else if (value instanceof Double) {
+                    eventMap.putDouble(key, (Double) value);
+                } else if (value instanceof String) {
+                    eventMap.putString(key, (String) value);
+                }
 
                 reactContext
                         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                         .emit(eventName, eventMap);
 
-                Log.d(TAG, "Event sent to JS: eventName=" + eventName + ", message=" + message);
+                Log.d(TAG, "Event sent to JS: eventName=" + eventName + ", key=" + key + ", value=" + value);
             } catch (Exception e) {
-                Log.e(TAG, "Error while sending event to JS: eventName=" + eventName + ", message=" + message, e);
+                Log.e(TAG, "Error while sending event to JS: eventName=" + eventName + ", key=" + key, e);
             }
         } else {
-            Log.e(TAG, "ReactApplicationContext is null. Event not sent: eventName=" + eventName + ", message=" + message);
+            Log.e(TAG, "ReactApplicationContext is null. Event not sent: eventName=" + eventName);
         }
     }
 

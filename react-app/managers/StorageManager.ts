@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const vault = {
-  set: async (value: any, key: string): Promise<void> => {
+  set: async (key: string, value: any): Promise<void> => {
     try {
       const stringValue = JSON.stringify(value);
       await AsyncStorage.setItem(key, stringValue);

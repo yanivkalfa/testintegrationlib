@@ -1,7 +1,8 @@
-import { PrimaryEvent } from '../config/types';
-import { createApiInstance } from './api';
+import {Selector} from '../config/types';
+import {createApiInstance} from './api';
 
 export const api = createApiInstance('/events/primary/active');
+
 export const getPrimeEvents = async () => {
-  return (await api.get<{primaryEvents: PrimaryEvent[]}>('')).data.primaryEvents
+  return (await api.get<{primaryEvents: Selector[]}>('')).data.primaryEvents;
 };

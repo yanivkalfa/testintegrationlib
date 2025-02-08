@@ -12,13 +12,17 @@ import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {
   Gender,
   HarkashaDescription,
-  Machal,
   RootStackParamList,
   Selector,
 } from '../../config/types';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState, selectMachalProp} from '../../store/Store';
 import {updateCurrentMachal} from '../../store/machalSlice';
+import EventDetails from './components/EventDetails/EventDetails';
+import {formatDate} from '../../utils/date.utils';
+import {UpdateMachalProp} from './Details.types';
+import HarkashaDetails from './components/HarkashaDetails/HarkashaDetails';
+import MarkishDetails from './components/MarkishDetails/MarkishDetails';
 
 const mimtzaMachalEnumValues = Object.values(HarkashaDescription).map(
   (option, index) => ({
@@ -47,20 +51,7 @@ const Details = () => {
     selectMachalProp(state, 'gender'),
   );
 
-  useEffect(() => {
-    if (!machalId) {
-      navigation.navigate('Atzada');
-    }
-  }, []);
-
-  const goScanModeSelector = () => {
-    navigation.navigate('ScanModeSelector');
-  };
-
-  const updateMachalProp = <K extends keyof Machal>(
-    key: K,
-    value: Machal[K],
-  ) => {
+  const updateMachalProp: UpdateMachalProp = (key, value) => {
     dispatch(
       updateCurrentMachal({
         [key]: value,
@@ -68,29 +59,38 @@ const Details = () => {
     );
   };
 
+  useEffect(() => {
+    if (!machalId) {
+      navigation.navigate('Atzada');
+    }
+    updateMachalProp('harkashaTime', formatDate());
+  }, []);
+
+  const goScanModeSelector = () => {
+    navigation.navigate('ScanModeSelector');
+  };
+
   const handleMimtzaSelect = (id: number) => {
     const selectedMimtza = mimtzaMachalEnumValues.find(item => item.id === id);
     if (selectedMimtza) {
-      updateMachalProp('mimtza', selectedMimtza); // Update the Redux store
+      updateMachalProp('mimtza', selectedMimtza);
     }
   };
 
   const handleGenderSelect = (id: number) => {
     const selectedGender = genderMachalEnumValues.find(item => item.id === id);
     if (selectedGender) {
-      updateMachalProp('gender', selectedGender.name); // Update the Redux store
+      updateMachalProp('gender', selectedGender.name);
     }
   };
 
   return (
     <ScrollView style={styles.container}>
-      {/* Header Section */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>זיהוי</Text>
         <Text style={styles.headerSubtitle}>{machalId}</Text>
       </View>
 
-      {/* Description Section */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>פרטי החלל</Text>
         <View style={styles.iconContainer}>
@@ -101,8 +101,7 @@ const Details = () => {
                 styles.iconButton,
                 machalMimtza?.id === label.id && styles.selectedButton,
               ]}
-              onPress={() => handleMimtzaSelect(label.id)} // Handle button press
-            >
+              onPress={() => handleMimtzaSelect(label.id)}>
               <Text
                 style={[
                   styles.iconText,
@@ -136,22 +135,11 @@ const Details = () => {
         </View>
       </View>
 
-      {/* Additional Information Section */}
       <View style={styles.section}>
-        <TextInput style={styles.input} placeholder="שייך אירוע משני *" />
-        <TextInput style={styles.input} placeholder="נלקח ב *" />
-        <TextInput style={styles.input} placeholder="מיקום הרשאה *" />
-        <Text style={styles.timestamp}>תאריך הרשאה: 18:16 30/01/2025</Text>
+        <EventDetails updateMachalProp={updateMachalProp} />
+        <HarkashaDetails updateMachalProp={updateMachalProp} />
       </View>
-
-      {/* Registering Entity Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>פרטי המרכיש</Text>
-        <TextInput style={styles.input} placeholder="ת.ז/מ.א *" />
-        <TextInput style={styles.input} placeholder="שם מלא *" />
-      </View>
-
-      {/* Bottom Button */}
+      <MarkishDetails updateMachalProp={updateMachalProp} />
       <View style={styles.buttonContainer}>
         <Button title="לקיחת טב''א" onPress={() => goScanModeSelector()} />
       </View>

@@ -24,9 +24,10 @@ class MainApplication : Application(), ReactApplication {
         object : DefaultReactNativeHost(this) {
             override fun getPackages(): List<ReactPackage> =
                 PackageList(this).packages.apply {
-                    // Register your custom ScannerPackage here
+                    // Register your custom packages here
                     add(ScannerPackage())
                     add(SchedulerPackage())
+                    add(ScreenStatePackage()) // Add the ScreenStatePackage
                 }
 
             override fun getJSMainModuleName(): String = "index"

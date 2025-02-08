@@ -1,33 +1,10 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 
 export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-    padding: 16,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#555',
-    marginTop: 4,
-  },
-  instructions: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
   selectionContainer: {
     flexGrow: 1,
+    padding: 16,
+    marginTop: 8,
   },
   row: {
     flexDirection: 'row',
@@ -44,6 +21,14 @@ export const styles = StyleSheet.create({
     borderColor: '#ddd',
     alignItems: 'center',
   },
+  fingerButtonSelected: {
+    backgroundColor: '#E3F2FD',
+    borderColor: '#64B5F6',
+  },
+  fingerButtonChecked: {
+    backgroundColor: '#E8F5E9',
+    borderColor: '#81C784',
+  },
   fingerText: {
     fontSize: 14,
     fontWeight: 'bold',
@@ -52,38 +37,5 @@ export const styles = StyleSheet.create({
   statusText: {
     fontSize: 12,
     color: '#555',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 16,
-  },
-  abortButton: {
-    flex: 1,
-    marginRight: 8,
-    padding: 16,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#007BFF',
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  abortButtonText: {
-    fontSize: 16,
-    color: '#007BFF',
-    fontWeight: 'bold',
-  },
-  continueButton: {
-    flex: 1,
-    marginLeft: 8,
-    padding: 16,
-    backgroundColor: '#007BFF',
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  continueButtonText: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: 'bold',
   },
 });

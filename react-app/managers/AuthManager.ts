@@ -3,10 +3,13 @@ import PublicClientApplication, {
   MSALAccount,
 } from 'react-native-msal';
 
-import {store } from '../store/Store';
-import { updateConfig } from '../store/configsSlice';
-import { getMySites } from '../api/SitesApi';
-import { setSiteId } from './SitesManager';
+import {store} from '../store/Store';
+import {updateConfig} from '../store/configsSlice';
+import {getMySites} from '../api/sitesApi';
+import {setSiteId} from './SitesManager';
+import {MSAL_SCOPE} from '../config/consts';
+import {isDeviceActive} from './DeviceManager';
+import {sendLoginNotification} from './NotificationManager';
 
 let authClient: PublicClientApplication;
 
@@ -23,12 +26,26 @@ const config: MSALConfiguration = {
   },
 };
 
-const updateIsLoggedIn = async (isLoggedIn: boolean) => {
-  const mySites = await getMySites();
-  console.log('mySites', mySites);
-  const siteId = mySites[0].id.toString();
-  setSiteId(siteId);
-  store.dispatch(updateConfig({name: "isLoggedIn", value: isLoggedIn}));
+export const getAuthClient = () => {
+  return authClient;
+};
+
+export const getAccounts = async () => {
+  return authClient.getAccounts();
+};
+
+export const updateIsLoggedIn = async (isLoggedIn: boolean) => {
+  if (isLoggedIn) {
+    try {
+      const mySites = await getMySites();
+      const siteId = mySites[0].id.toString();
+      console.log('mySites, siteId', mySites, siteId);
+      setSiteId(siteId);
+    } catch (err) {
+      console.log('errerr', err);
+    }
+  }
+  store.dispatch(updateConfig({name: 'isLoggedIn', value: isLoggedIn}));
 };
 
 export const initClientMsal = async (): Promise<void> => {
@@ -38,67 +55,51 @@ export const initClientMsal = async (): Promise<void> => {
 
 export const getAccessToken = async (): Promise<string | null> => {
   const accounts = await authClient.getAccounts();
-
-  if (accounts.length === 0) {
-    console.log('No accounts detected. Requiring login.');
+  if (accounts.length > 0) {
+    const account: MSALAccount = accounts[0];
     try {
-      const tokenResponse = await authClient.acquireToken({
-        scopes: ['api://tik-chalal-dev/all'],
+      const tokenResponse = await authClient.acquireTokenSilent({
+        scopes: [MSAL_SCOPE],
+        account,
+        forceRefresh: true,
       });
 
       if (tokenResponse) {
-        await updateIsLoggedIn(true);
         return tokenResponse.accessToken;
       } else {
-        console.error('Interactive token response is undefined.');
-        return null;
+        console.error('Token response is undefined.');
       }
-    } catch (interactiveError) {
-      await updateIsLoggedIn(false);
-      console.error('Interactive login failed.', interactiveError);
-      return null;
+    } catch (e) {
+      console.log('Silent token acquisition failed', e);
     }
   }
 
-  const account: MSALAccount = accounts[0];
+  return null;
+};
+
+export const login = async (): Promise<string | null> => {
+  if (!(await isDeviceActive())) {
+    sendLoginNotification();
+    return null;
+  }
+
   try {
-    const tokenResponse = await authClient.acquireTokenSilent({
-      scopes: ['api://tik-chalal-dev/all'],
-      account,
+    const tokenResponse = await authClient.acquireToken({
+      scopes: [MSAL_SCOPE],
     });
 
     if (tokenResponse) {
       await updateIsLoggedIn(true);
       return tokenResponse.accessToken;
     } else {
-      await updateIsLoggedIn(false);
-      console.error('Token response is undefined.');
+      console.log('Interactive token response is undefined.');
       return null;
     }
-  } catch (silentError) {
-    console.error('Silent token acquisition failed, attempting interactive login.', silentError);
-
-    try {
-      const tokenResponse = await authClient.acquireToken({
-        scopes: ['api://tik-chalal-dev/all'],
-      });
-
-      if (tokenResponse) {
-        await updateIsLoggedIn(true);
-        return tokenResponse.accessToken;
-      } else {
-        await updateIsLoggedIn(false);
-        console.error('Interactive token response is undefined.');
-        return null;
-      }
-    } catch (interactiveError) {
-      console.error('Interactive login failed.', interactiveError);
-      await updateIsLoggedIn(false);
-      return null;
-    }
+  } catch (e) {
+    console.log('Interactive login failed.', e);
+    return null;
   }
 };
-
 
 export const logout = async (): Promise<void> => {
   try {
@@ -106,7 +107,8 @@ export const logout = async (): Promise<void> => {
 
     if (accounts.length > 0) {
       const account: MSALAccount = accounts[0];
-      await authClient.signOut({ account });
+      await authClient.signOut({account});
+      console.log('logout successfully');
       updateIsLoggedIn(false);
     } else {
       console.error('No accounts detected to logout.');
@@ -114,9 +116,4 @@ export const logout = async (): Promise<void> => {
   } catch (error) {
     console.error('Logout error:', error);
   }
-};
-
-export const isUserLogged = async (): Promise<boolean> => {
-  const accounts = await authClient.getAccounts();
-  return accounts.length > 0;
 };

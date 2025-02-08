@@ -1,5 +1,61 @@
 export const HEADER_KEYS = {
-  Sites: "X-TC-Site-Ids",
-}
+  Sites: 'X-TC-Site-Ids',
+};
 
+export const LOCATION_API = '4b0f1b6fee24371fc7f9f7ce8c48e72a';
 export const SITES_ID_STORAGE_KEY = 'mySite';
+export const MSAL_SCOPE = 'api://tik-chalal-dev/all';
+export const LOGIN_NOTIFICATION_ID = 'login-required';
+export const SYNC_SUCCESS_NOTIFICATION_ID = 'sync-success';
+export const SYNC_FAILED_NOTIFICATION_ID = 'sync-failed';
+
+export const NO_FINGER_ENUM = {
+  NO_FINGER: 'NO_FINGER',
+  FINGER_CUT: 'FINGER_CUT',
+  FINGER_BURNED: 'FINGER_BURNED',
+  OTHER: 'OTHER',
+} as const;
+
+export const FINGERS = {
+  THUMB_LEFT: 'THUMB_LEFT',
+  INDEX_FINGER_LEFT: 'INDEX_FINGER_LEFT',
+  MIDDLE_FINGER_LEFT: 'MIDDLE_FINGER_LEFT',
+  RING_FINGER_LEFT: 'RING_FINGER_LEFT',
+  LITTLE_FINGER_LEFT: 'LITTLE_FINGER_LEFT',
+  THUMB_RIGHT: 'THUMB_RIGHT',
+  INDEX_FINGER_RIGHT: 'INDEX_FINGER_RIGHT',
+  MIDDLE_FINGER_RIGHT: 'MIDDLE_FINGER_RIGHT',
+  RING_FINGER_RIGHT: 'RING_FINGER_RIGHT',
+  LITTLE_FINGER_RIGHT: 'LITTLE_FINGER_RIGHT',
+} as const;
+
+export const FINGERS_TO_NUMBERS = {
+  [FINGERS.THUMB_RIGHT]: 1,
+  [FINGERS.INDEX_FINGER_RIGHT]: 2,
+  [FINGERS.MIDDLE_FINGER_RIGHT]: 3,
+  [FINGERS.RING_FINGER_RIGHT]: 4,
+  [FINGERS.LITTLE_FINGER_RIGHT]: 5,
+  [FINGERS.THUMB_LEFT]: 6,
+  [FINGERS.INDEX_FINGER_LEFT]: 7,
+  [FINGERS.MIDDLE_FINGER_LEFT]: 8,
+  [FINGERS.RING_FINGER_LEFT]: 9,
+  [FINGERS.LITTLE_FINGER_LEFT]: 10,
+};
+
+export const FINGER_LABELS = {
+  [FINGERS.THUMB_LEFT]: 'אגודל שמאל',
+  [FINGERS.THUMB_RIGHT]: 'אגודל ימין',
+  [FINGERS.INDEX_FINGER_LEFT]: 'אצבע שמאל',
+  [FINGERS.INDEX_FINGER_RIGHT]: 'אצבע ימין',
+  [FINGERS.MIDDLE_FINGER_LEFT]: 'אמה שמאל',
+  [FINGERS.MIDDLE_FINGER_RIGHT]: 'אמה ימין',
+  [FINGERS.RING_FINGER_LEFT]: 'קמיצה שמאל',
+  [FINGERS.RING_FINGER_RIGHT]: 'קמיצה ימין',
+  [FINGERS.LITTLE_FINGER_LEFT]: 'זרת שמאל',
+  [FINGERS.LITTLE_FINGER_RIGHT]: 'זרת ימין',
+} as const;
+
+export const PRIMARY_EVENTS = 'primaryEvents';
+
+export const ANYTHING_BUT_NUMBERS_REGEX = new RegExp(/[^0-9]/g);
+export const HEBREW_NAME_REGEX = new RegExp(/[^\u0590-\u05FF\s-']/g);

@@ -16,7 +16,10 @@ export const createImagesFolder = async (): Promise<void> => {
   }
 };
 
-export const saveFile = async (fileName: string, content: string): Promise<void> => {
+export const saveFile = async (
+  fileName: string,
+  content: string,
+): Promise<void> => {
   const filePath = `${folderPath}/${fileName}`;
   try {
     await RNFS.writeFile(filePath, content, 'utf8');
@@ -29,7 +32,7 @@ export const saveFile = async (fileName: string, content: string): Promise<void>
 export const listFiles = async (): Promise<RNFS.ReadDirItem[] | void> => {
   try {
     const files = await RNFS.readDir(folderPath);
-    files.forEach((file) => {
+    files.forEach(file => {
       console.log('File found:', file.name);
     });
     return files;
@@ -57,6 +60,5 @@ export const deleteFile = async (fileName: string): Promise<void> => {
       await RNFS.unlink(filePath);
     } else {
     }
-  } catch (error) {
-  }
+  } catch (error) {}
 };
