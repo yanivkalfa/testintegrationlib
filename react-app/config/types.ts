@@ -99,6 +99,8 @@ export type FingerFile = {
   width: number;
 };
 
+export type SelectedFinger = keyof typeof FINGERS | null;
+
 export type Fingerprint = keyof typeof NO_FINGER_ENUM | FingerFile;
 
 export type FingersObject = Partial<Record<keyof typeof FINGERS, Fingerprint>>;
@@ -134,6 +136,7 @@ export type Machal = MachalReq & {
   type: MachalType;
   scanMode: ScanMode;
   gender: Gender;
+  selectedFinger: SelectedFinger;
   serverSyncStatus: 'needSync' | 'synced' | 'deleted';
   viewStatus: 'new' | 'viewed';
   createdAt: string;

@@ -11,13 +11,15 @@ export const machalsSlice = createSlice({
   initialState,
   reducers: {
     startMachal: (state, action: PayloadAction<{type: MachalType}>) => {
-      state.id = getRandomIDNumber().toString();
-      state.type = action.payload.type;
-      state.serverSyncStatus = 'needSync';
-      state.viewStatus = 'new';
-      state.createdAt = new Date().toISOString();
-      state.updatedAt = state.createdAt;
-      state.fingers = {};
+      return {
+        id: getRandomIDNumber().toString(),
+        type: action.payload.type,
+        serverSyncStatus: 'needSync',
+        viewStatus: 'new',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        fingers: {},
+      };
     },
     updateCurrentMachal: (
       state,
@@ -27,6 +29,7 @@ export const machalsSlice = createSlice({
         ...state,
         ...action.payload,
         updatedAt: new Date().toISOString(),
+        fingers: state.fingers || {}, // Ensure fingers is preserved
       };
     },
     resetMachal: () => {
@@ -40,24 +43,21 @@ export const machalsSlice = createSlice({
       }>,
     ) => {
       const {fingerIndex, fingerPrint} = action.payload;
-      if (!state.fingers) {
-        state.fingers = {};
-      }
-      state.fingers[fingerIndex] = fingerPrint; // Update or add the fingerprint
+      state.fingers = {
+        ...state.fingers,
+        [fingerIndex]: fingerPrint, // Safely add or update the fingerprint
+      };
       state.updatedAt = new Date().toISOString();
-      console.log(`Fingerprint added/updated: ${fingerIndex}`);
     },
     removeFingerPrintForNewMachal: (
       state,
       action: PayloadAction<keyof typeof FINGERS>,
     ) => {
       const fingerIndex = action.payload;
-      if (state.fingers && state.fingers[fingerIndex]) {
-        delete state.fingers[fingerIndex];
+      if (state.fingers && fingerIndex in state.fingers) {
+        const {[fingerIndex]: _, ...rest} = state.fingers; // Immutably remove the key
+        state.fingers = rest;
         state.updatedAt = new Date().toISOString();
-        console.log(`Fingerprint removed: ${fingerIndex}`);
-      } else {
-        console.warn(`Fingerprint not found for index: ${fingerIndex}`);
       }
     },
   },
@@ -100,7 +100,7 @@ const removeFingerPrintForNewMachalThunk = createAsyncThunk(
     const state = getState() as {machals: Partial<Machal>};
     const {fingers} = state.machals;
 
-    if (fingers && fingers[fingerIndex]) {
+    if (fingers && fingerIndex in fingers) {
       const fingerPrint = fingers[fingerIndex];
       if (
         typeof fingerPrint === 'object' &&
@@ -109,9 +109,6 @@ const removeFingerPrintForNewMachalThunk = createAsyncThunk(
       ) {
         try {
           await RNFS.unlink(fingerPrint.storageFileName);
-          console.log(
-            `Deleted fingerprint file: ${fingerPrint.storageFileName}`,
-          );
         } catch (error) {
           console.warn(
             `Failed to delete fingerprint file: ${fingerPrint.storageFileName}`,
@@ -121,8 +118,6 @@ const removeFingerPrintForNewMachalThunk = createAsyncThunk(
       }
 
       dispatch(machalsSlice.actions.removeFingerPrintForNewMachal(fingerIndex));
-    } else {
-      console.warn(`Fingerprint not found for index: ${fingerIndex}`);
     }
   },
 );

@@ -67,7 +67,7 @@ const App = (): React.JSX.Element => {
   }, []);
 
   const handlePress = (type: MachalType) => {
-    dispatch(startMachal({type}));
+    //dispatch(startMachal({type}));
     navigation.navigate('Atzada');
   };
 

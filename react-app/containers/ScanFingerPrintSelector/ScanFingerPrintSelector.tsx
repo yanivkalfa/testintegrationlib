@@ -3,12 +3,14 @@ import {View, Text, TouchableOpacity, ScrollView} from 'react-native';
 import {styles} from './ScanFingerPrintSelector.styles';
 import globalStyles from '../../global.styles';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {RootStackParamList} from '../../config/types';
-import {useSelector} from 'react-redux';
+import {RootStackParamList, SelectedFinger} from '../../config/types';
+import {useDispatch, useSelector} from 'react-redux';
 import {RootState, selectMachalProp} from '../../store/Store';
 import {FINGER_LABELS, FINGERS} from '../../config/consts';
+import {updateCurrentMachal} from '../../store/machalSlice';
 
 const ScanFingerPrintSelector = () => {
+  const dispatch = useDispatch();
   const [selectedFinger, setSelectedFinger] = useState<
     keyof typeof FINGERS | null
   >(null);
@@ -18,14 +20,18 @@ const ScanFingerPrintSelector = () => {
     selectMachalProp(state, 'fingers'),
   );
 
+  const machalSelectedFinger = useSelector((state: RootState) =>
+    selectMachalProp(state, 'selectedFinger'),
+  );
+
   const goScanFinger = () => {
-    if (selectedFinger) {
-      navigation.navigate('ScanFinger', {finger: selectedFinger});
+    if (machalSelectedFinger) {
+      navigation.navigate('ScanFinger', {finger: machalSelectedFinger});
     }
   };
 
-  const handleFingerSelect = (finger: keyof typeof FINGERS) => {
-    setSelectedFinger(finger);
+  const handleFingerSelect = (selectedFinger: SelectedFinger) => {
+    dispatch(updateCurrentMachal({selectedFinger}));
   };
 
   return (
@@ -54,7 +60,8 @@ const ScanFingerPrintSelector = () => {
                   style={[
                     styles.fingerButton,
                     hasImage && styles.fingerButtonChecked,
-                    selectedFinger === fingerKey && styles.fingerButtonSelected,
+                    machalSelectedFinger === fingerKey &&
+                      styles.fingerButtonSelected,
                   ]}>
                   <Text style={styles.fingerText}>
                     {FINGER_LABELS[fingerKey]}
@@ -77,7 +84,7 @@ const ScanFingerPrintSelector = () => {
         <TouchableOpacity
           style={globalStyles.actionButton}
           onPress={() => goScanFinger()}
-          disabled={!selectedFinger}>
+          disabled={!machalSelectedFinger}>
           <Text style={globalStyles.actionButtonText}>המשך</Text>
         </TouchableOpacity>
       </View>

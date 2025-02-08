@@ -9,12 +9,19 @@ import {
   useNavigation,
   NavigationProp,
 } from '@react-navigation/native';
-import {FingerFile, RootStackParamList} from '../../config/types';
+import {
+  FingerFile,
+  RootStackParamList,
+  SelectedFinger,
+} from '../../config/types';
 import {FINGER_LABELS} from '../../config/consts';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState, selectMachalProp} from '../../store/Store';
-import {addOrUpdateFingerPrintForNewMachal} from '../../store/machalSlice';
-import {listFiles, saveFile} from '../../managers/FileManager';
+import {
+  addOrUpdateFingerPrintForNewMachal,
+  updateCurrentMachal,
+} from '../../store/machalSlice';
+import {saveFile} from '../../managers/FileManager';
 
 import {testPrintBase64} from '../../assets/testPrintBase64'; // just a mock
 
@@ -26,6 +33,10 @@ const ScanFinger = () => {
   const machalId = useSelector((state: RootState) =>
     selectMachalProp(state, 'id'),
   );
+
+  const handleFingerSelect = (selectedFinger: SelectedFinger) => {
+    dispatch(updateCurrentMachal({selectedFinger}));
+  };
 
   const onContinue = async () => {
     if (!machalId) {
@@ -45,7 +56,8 @@ const ScanFinger = () => {
       dispatch(
         addOrUpdateFingerPrintForNewMachal({fingerIndex: finger, fingerPrint}),
       );
-      navigation.navigate('ScanFingerPrintSelector');
+      handleFingerSelect(null);
+      navigation.goBack();
       console.log(`Fingerprint saved and added for ${finger}:`, fingerPrint);
     } catch (error) {
       console.error('Error saving fingerprint:', error);
