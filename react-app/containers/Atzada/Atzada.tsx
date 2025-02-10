@@ -13,13 +13,13 @@ import {updateCurrentMachal} from '../../store/machalSlice';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from '../../config/types';
 import {getRandomIDNumber} from '../../utils/math.utils';
-import {RootState, selectMachalProp} from '../../store/Store';
+import {RootState, selectMachalProp} from '../../store/store';
 
 const Atzada = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useDispatch();
-  const machalType = useSelector((state: RootState) =>
-    selectMachalProp(state, 'type'),
+  const machalCaseType = useSelector((state: RootState) =>
+    selectMachalProp(state, 'caseType'),
   );
   const machalId = useSelector((state: RootState) =>
     selectMachalProp(state, 'id'),
@@ -34,7 +34,7 @@ const Atzada = () => {
   const codeFrequencies = useRef<{[value: string]: number}>({});
 
   useEffect(() => {
-    if (!machalType) {
+    if (!machalCaseType) {
       navigation.navigate('Home');
     }
   }, []);

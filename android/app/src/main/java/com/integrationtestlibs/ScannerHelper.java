@@ -31,7 +31,7 @@ public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
         void onDeviceDisconnected(int deviceId);
         void onPermissionGranted(int deviceId);
         void onPermissionDenied(int deviceId);
-        void onDeviceReadyForScanning(int deviceId);
+        void onDeviceReadyForScanning(int deviceId, String deviceName);
         void onCaptureStarted();
         void onCaptureCancelled();
         void onCaptureUpdated(Bitmap image);
@@ -71,12 +71,12 @@ public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
 
     @Override
     public void scanDeviceAttached(int deviceId) {
-        Emitter.log("Device attached: " + deviceId);
-        if (events != null) {
-            events.onDeviceConnected(deviceId);
-        }
-
         try {
+            Emitter.log("Device attached: " + deviceId);
+            if (events != null) {
+                events.onDeviceConnected(deviceId);
+            }
+
             if (!mIBScan.hasPermission(deviceId)) {
                 mIBScan.requestPermission(deviceId);
             } else {
@@ -93,65 +93,78 @@ public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
         }
     }
 
+    private void cleanUpDeviceResources() {
+        try {
+            if (mIBScanDevice != null) {
+                mIBScanDevice.setScanDeviceListener(null);
+                if (mIBScanDevice.isOpened()) {
+                    mIBScanDevice.close();
+                }
+                mIBScanDevice = null; // Clear the reference
+            }
+            Emitter.log("Device resources cleaned up successfully.");
+        } catch (IBScanException e) {
+            Emitter.log("Error cleaning up device resources: " + e.getMessage());
+        }
+    }
+
     @Override
     public void scanDeviceDetached(int deviceId) {
         Emitter.log("Device detached: " + deviceId);
+        cleanUpDeviceResources();
         if (events != null) {
             events.onDeviceDisconnected(deviceId);
         }
     }
 
-    /*
-    private void printDeviceDetails(int deviceId) {
-        try {
-            // Get the count of connected devices
-            int deviceCount = mIBScan.getDeviceCount();
-            Emitter.log("Number of connected devices: " + deviceCount);
-
-            // Iterate over each device using its logical index
-            for (int i = 0; i < deviceCount; i++) {
-                IBScan.DeviceDesc deviceDesc = mIBScan.getDeviceDescription(i);
-                Emitter.log("Device " + i + " Details:");
-                Emitter.log("Device ID: " + deviceDesc.deviceId);
-                Emitter.log("Product Name: " + deviceDesc.productName);
-                Emitter.log("Serial Number: " + deviceDesc.serialNumber);
-                Emitter.log("Interface Type: " + deviceDesc.interfaceType);
-            }
-        } catch (IBScanException e) {
-            Emitter.log("Error fetching device details: " + e.getMessage());
-        }
-    }
-    */
-
-    @Override
-    public void scanDevicePermissionGranted(int deviceId, boolean granted) {
-        Emitter.log("ACTION_USB_PERMISSION - IIIIIIIIIIIIIIIIIIII");
-        if (granted) {
-            Emitter.log("Permission granted for device: " + deviceId);
-            if (events != null) {
-                events.onPermissionGranted(deviceId);
-            }
-
+    public String getDeviceName(int deviceIndex) {
+        if (mIBScan != null) {
             try {
-                if (mIBScanDevice == null || !mIBScanDevice.isOpened()) {
-                    int deviceIndex = mIBScan.getDeviceIndexByUsbId(deviceId);
-                    if (deviceIndex != -1) {
-                        Emitter.log("found device for device id: " + deviceId + " At index: " + deviceIndex);
-                    } else {
-                        Emitter.log("Device not found for device id: " + deviceId);
-                    }
+                IBScan.DeviceDesc deviceDesc = mIBScan.getDeviceDescription(deviceIndex);
+                return (deviceDesc != null) ? deviceDesc.productName : "Unknown Device";
+            } catch (IBScanException e) {
+                Emitter.log("Error retrieving device name: " + e.getMessage());
+                return "Error Retrieving Device Name";
+            }
+        }
+        return "IBScan Not Initialized";
+    }
 
+    public void openScanDevice(int deviceId) {
+        try {
+            Emitter.log("openScanDevice");
+            int deviceIndex = mIBScan.getDeviceIndexByUsbId(deviceId);
+            Emitter.log("scanDeviceOpened deviceIndex" + deviceIndex);
+            if (mIBScanDevice == null || !mIBScanDevice.isOpened()) {
+                Emitter.log("DeviceIndex is: " + deviceIndex);
+                if (deviceIndex > -1) {
                     Emitter.log("Opening device at index: " + deviceIndex);
                     mIBScanDevice = mIBScan.openDevice(deviceIndex);
                 }
-
-                mIBScanDevice.setScanDeviceListener(this);
-                Emitter.log("Device opened successfully: " + deviceId);
+            }
+            Emitter.log("scanDeviceOpened setScanDeviceListener");
+            mIBScanDevice.setScanDeviceListener(this);
+            if (events != null) {
+                String deviceName = getDeviceName(deviceIndex);
+                Emitter.log("scanDeviceOpened deviceName" + deviceName);
+                events.onDeviceReadyForScanning(deviceId, deviceName);
+            }
+        } catch (Exception e) {
+            Emitter.log("Error in scanDeviceOpened: " + e.getMessage());
+        }
+    }
+    @Override
+    public void scanDevicePermissionGranted(int deviceId, boolean granted) {
+        Emitter.log("ACTION_USB_PERMISSION");
+        if (granted) {
+            try {
+                Emitter.log("Permission granted for device: " + deviceId);
                 if (events != null) {
-                    events.onDeviceReadyForScanning(deviceId);
+                    events.onPermissionGranted(deviceId);
                 }
-            } catch (IBScanException e) {
-                Emitter.log("Exception details: " + e.getType() + ", " + e.getMessage());
+                openScanDevice(deviceId);
+            } catch (Exception e) {
+                Emitter.log("Exception details: " + e.getMessage());
             }
         } else {
             Emitter.log("Permission denied for device: " + deviceId);
@@ -161,6 +174,8 @@ public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
         }
     }
 
+    @Override
+    public void scanDeviceOpenComplete(int deviceId, IBScanDevice device, IBScanException exception) {}
 
     @Override
     public void scanDeviceCountChanged(int count) {
@@ -172,38 +187,54 @@ public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
         Emitter.log("Device " + deviceId + " initialization progress: " + progress + "%");
     }
 
-    @Override
-    public void scanDeviceOpenComplete(int deviceId, IBScanDevice device, IBScanException exception) {
-        Emitter.log("ALSKJDLASKDJALSDKJALSDKJDLKASJDLSAKJALKSDJAKSD");
-        if (exception == null) {
-            Emitter.log("Device " + deviceId + " opened successfully.");
-            mIBScanDevice = device;
-            mIBScanDevice.setScanDeviceListener(this);
+    public void checkConnectedDevicesPermissions() {
+        try {
+            UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+            if (usbManager != null) {
+                HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
+                if (deviceList != null && !deviceList.isEmpty()) {
+                    for (UsbDevice device : deviceList.values()) {
+                        if (mIBScan.isScanDevice(device)) {
+                            Emitter.log("Found scanner device: " + device.getDeviceName());
 
-            if (events != null) {
-                events.onDeviceReadyForScanning(deviceId);
+                            int deviceId = device.getDeviceId();
+                            try {
+                                if (!mIBScan.hasPermission(deviceId)) {
+                                    mIBScan.requestPermission(deviceId);
+                                } else {
+                                    Emitter.log("Permission already granted for device: " + deviceId);
+                                    openScanDevice(deviceId);
+                                }
+                            } catch (Exception e) {
+                                Emitter.log("Error requesting permission: " + e.getMessage());
+                                if (events != null) {
+                                    events.onError("Error requesting permission: " + e.getMessage());
+                                }
+                            }
+                        } else {
+                            Emitter.log("Device " + device.getDeviceName() + " is not a scanner device.");
+                        }
+                    }
+                } else {
+                    Emitter.log("No USB devices are connected at startup.");
+                }
+            } else {
+                Emitter.log("UsbManager is not available.");
             }
-        } else {
-            Emitter.log("Error opening device " + deviceId + ": " + exception.getMessage());
-            if (events != null) {
-                events.onError("Error opening device: " + exception.getMessage());
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Emitter.log("An error occurred while checking connected devices: " + e.getMessage());
         }
     }
-
-    // New Section: Required IBScanDeviceListener Methods
-    // ---------------------------------------------------
-
     public void beginCaptureImage() {
-        if (mIBScanDevice == null || !mIBScanDevice.isOpened()) {
-            Emitter.log("Device is not opened for capturing.");
-            if (events != null) {
-                events.onError("Device is not opened for capturing.");
-            }
-            return;
-        }
-
         try {
+            if (mIBScanDevice == null || !mIBScanDevice.isOpened()) {
+                Emitter.log("Device is not opened for capturing.");
+                if (events != null) {
+                    events.onError("Device is not opened for capturing.");
+                }
+                return;
+            }
             // Set decimation to reduce image size or quality
             //mIBScanDevice.setProperty(IBScanDevice.PropertyId.ENABLE_DECIMATION, "TRUE");
 
@@ -233,15 +264,15 @@ public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
     }
 
     public void cancelCaptureImage() {
-        if (mIBScanDevice == null || !mIBScanDevice.isOpened()) {
-            Emitter.log("Device is not opened for cancelling capture.");
-            if (events != null) {
-                events.onError("Device is not opened for cancelling capture.");
-            }
-            return;
-        }
-
         try {
+            if (mIBScanDevice == null || !mIBScanDevice.isOpened()) {
+                Emitter.log("Device is not opened for cancelling capture.");
+                if (events != null) {
+                    events.onError("Device is not opened for cancelling capture.");
+                }
+                return;
+            }
+
             mIBScanDevice.cancelCaptureImage();
             Emitter.log("Capture cancelled.");
             if (events != null) {
@@ -254,6 +285,10 @@ public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
             }
         }
     }
+
+
+    // New Section: Required IBScanDeviceListener Methods
+    // ---------------------------------------------------
 
     @Override
     public void deviceCommunicationBroken(IBScanDevice device) {
@@ -316,3 +351,40 @@ public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
         Emitter.log("Key buttons pressed: " + pressedKeyButtons);
     }
 }
+
+
+//
+//    private void printDeviceDetails(int deviceId) {
+//        try {
+//            // Get the count of connected devices
+//            int deviceCount = mIBScan.getDeviceCount();
+//            Emitter.log("Number of connected devices: " + deviceCount);
+//
+//            // Iterate over each device using its logical index
+//            for (int i = 0; i < deviceCount; i++) {
+//                IBScan.DeviceDesc deviceDesc = mIBScan.getDeviceDescription(i);
+//                Emitter.log("Device " + i + " Details:");
+//                Emitter.log("Device ID: " + deviceDesc.deviceId);
+//                Emitter.log("Product Name: " + deviceDesc.productName);
+//                Emitter.log("Serial Number: " + deviceDesc.serialNumber);
+//                Emitter.log("Interface Type: " + deviceDesc.interfaceType);
+//            }
+//        } catch (IBScanException e) {
+//            Emitter.log("Error fetching device details: " + e.getMessage());
+//        }
+//    }
+
+//
+//@Override
+//public void scanDeviceOpenComplete(int deviceId, IBScanDevice device, IBScanException exception) {
+//        Emitter.log("scanDeviceOpenComplete ---  aaaaaaaa");
+//        if (exception == null) {
+//            Emitter.log("scanDeviceOpenComplete ---  bbbbbbbbbbbbb");
+//            scanDeviceOpened(deviceId, device);
+//        } else {
+//            Emitter.log("Error opening device " + deviceId + ": " + exception.getMessage());
+//            if (events != null) {
+//                events.onError("Error opening device: " + exception.getMessage());
+//            }
+//        }
+//}

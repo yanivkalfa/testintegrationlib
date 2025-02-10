@@ -7,7 +7,7 @@ const {flex, justifyContent, alignItems, ...actionButton} =
 export const styles = StyleSheet.create({
   fingerprintContainer: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginVertical: 16,
   },
   fingerprintText: {
     color: '#aaa',

@@ -31,8 +31,8 @@ public class ScannerModule extends ReactContextBaseJavaModule {
             }
 
             @Override
-            public void onDeviceReadyForScanning(int deviceId) {
-                sendEvent("onDeviceReadyForScanning", "Device is ready for scanning: " + deviceId);
+            public void onDeviceReadyForScanning(int deviceId, String deviceName) {
+                sendEvent("onDeviceReadyForScanning", deviceName);
             }
 
             @Override
@@ -88,10 +88,14 @@ public class ScannerModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void checkConnectedDevicesPermissions() {
+        scannerHelper.checkConnectedDevicesPermissions();
+    }
+
+    @ReactMethod
     public void beginCaptureImage() {
         scannerHelper.beginCaptureImage();
     }
-
     @ReactMethod
     public void cancelCaptureImage() {
         scannerHelper.cancelCaptureImage();

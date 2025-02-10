@@ -24,11 +24,6 @@ export type UpdateConfigPayload<
   value: ConfigState[K];
 };
 
-export enum MachalType {
-  Wounded = 'פצוע אלמוני',
-  Machal = 'מחל',
-}
-
 export enum ScanMode {
   ManualScan = 'הרכשה ידנית',
   AutoScan = 'הרכשה אוטומטית',
@@ -86,6 +81,18 @@ export enum CaseType {
   Machal = 'מחל',
 }
 
+export enum SyncStatus {
+  NEED_SYNC = 'NEED_SYNC',
+  SYNCED = 'SYNCED',
+  SYNC_FAILED = 'SYNC_FAILED',
+  SYNC_IN_PROGRESS = 'SYNC_IN_PROGRESS',
+}
+
+export enum ViewedStatus {
+  NEW = 'NEW',
+  VIEWED = 'VIEWED',
+}
+
 type FingersKeys = {
   [K in keyof typeof FINGERS]: {
     [K2 in K]: keyof typeof NO_FINGER_ENUM | string;
@@ -111,6 +118,20 @@ export type FingersWithoutFiles = Partial<
   Record<number, keyof typeof NO_FINGER_ENUM>
 >;
 
+export type MezahCaseMetaData = {
+  id: string;
+  gender: Gender;
+  mimtza?: EnumOrSelector;
+  primaryEvent: EnumOrSelector;
+  secondaryEvent: string;
+  originLocation: OriginLocation;
+  harkashaLocation: string;
+  harkashaTime: string;
+  markishIdNumber: string;
+  markishName: string;
+  caseType: CaseType;
+};
+
 export type FingerprintsBody = FingersObject & {
   mahal_id: string;
   scanner_id: string;
@@ -118,8 +139,14 @@ export type FingerprintsBody = FingersObject & {
   isManualSubmit: boolean;
 };
 
-export type MachalReq = {
+export type Machal = {
   id: string;
+  caseType: CaseType;
+  scanMode: ScanMode;
+  syncStatus: SyncStatus;
+  syncFailedReason?: string;
+  syncAttemts: number;
+  viewStatus: ViewedStatus;
   gender: Gender;
   mimtza?: AddSelector;
   primaryEvent: EnumOrSelector;
@@ -130,15 +157,7 @@ export type MachalReq = {
   markishIdNumber: string;
   markishName: string;
   fingers: FingersObject;
-};
-
-export type Machal = MachalReq & {
-  type: MachalType;
-  scanMode: ScanMode;
-  gender: Gender;
-  selectedFinger: SelectedFinger;
-  serverSyncStatus: 'needSync' | 'synced' | 'deleted';
-  viewStatus: 'new' | 'viewed';
+  scannerId: string;
   createdAt: string;
   updatedAt: string;
 };

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Picker} from '@react-native-picker/picker';
 import {View, Text, TextInput, ActivityIndicator} from 'react-native';
 import {useSelector} from 'react-redux';
-import {RootState, selectMachalProp} from '../../../../store/Store';
+import {RootState, selectMachalProp} from '../../../../store/store';
 import {PrimaryEvent, Selector} from '../../../../config/types';
 import {getPrimeEvents} from '../../../../api/eventsApi';
 import {styles} from './EventDetails.styles';

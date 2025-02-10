@@ -1,49 +1,71 @@
-import {
-  NativeModules,
-  DeviceEventEmitter,
-} from 'react-native';
+import {NativeModules, DeviceEventEmitter} from 'react-native';
+import {store, selectUnsyncedMachals} from '../store/store';
+import {Machal, Machals, SyncStatus} from '../config/types';
+import {updateMachal} from '../store/machalsSlice';
+import {prepareStateToSend} from '../utils/general.utils';
+import {upsertCase} from '../api/fingerprintApi';
 
 const {Scheduler} = NativeModules;
 
-import {store, selectUnsyncedMachals} from '../store/Store';
-import { Machal, Machals } from '../config/types';
-import { updateMachal } from '../store/machalsSlice';
-
-// todo: replace with real call to server
-const syncMachalToServer = async (machal: Machal): Promise<boolean> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      return resolve(true);
-    }, 150);
-  });
-}
+const updateMachalSyncStatus = async (
+  id: string,
+  updatedMachal: Partial<Machal>,
+) => {
+  store.dispatch(updateMachal({id, updatedMachal}));
+};
 
 const EVENT_NAME = 'SchedulerEvent';
-const syncBodies = async (event: string) => {
+const syncMachals = async () => {
+  console.log('syncMachals happening');
   const state = store.getState();
   const unSyncedMachals: Machals = selectUnsyncedMachals(state);
-  console.log('Syncing...');
   for (const machal of unSyncedMachals) {
-    try{
-      console.log('... machal: ', machal);
-      await syncMachalToServer(machal);
-      store.dispatch(updateMachal({id: machal.id, updatedMachal: {serverSyncStatus: "synced"}}));
-    } catch(e) {
-      // check if error is 401 un authorised - then stop process and ask for relog
-      // check if any other error - no internet stop processs no relog
-      console.log(e);
+    try {
+      const data = prepareStateToSend(machal);
+      console.log('data', data);
+      updateMachalSyncStatus(machal.id, {
+        syncStatus: SyncStatus.SYNC_IN_PROGRESS,
+        updatedAt: new Date().toISOString(),
+      });
+      await upsertCase(machal.id, data);
+    } catch (error: any) {
+      console.log('error', error);
+      if (error.code === 'ECONNABORTED') {
+        updateMachalSyncStatus(machal.id, {
+          syncStatus: SyncStatus.NEED_SYNC,
+          syncAttemts: machal.syncAttemts + 1,
+          updatedAt: new Date().toISOString(),
+        });
+      } else {
+        updateMachalSyncStatus(machal.id, {
+          syncStatus: SyncStatus.SYNC_FAILED,
+          updatedAt: new Date().toISOString(),
+          syncFailedReason: error.message || JSON.stringify(error),
+        });
+      }
     }
   }
 };
-DeviceEventEmitter.addListener(EVENT_NAME, syncBodies);
+DeviceEventEmitter.addListener(EVENT_NAME, syncMachals);
 
-export const checkSyncStatus = (isOnline: boolean, isLoggedIn: boolean, unSyncedMachals: Machals): void => {
-  if(!isOnline || !isLoggedIn || unSyncedMachals.length <= 0) {
+export const checkSyncStatus = (
+  isOnline: boolean,
+  isLoggedIn: boolean,
+  unSyncedMachals: Machals,
+): void => {
+  console.log(
+    '!isOnline || !isLoggedIn || unSyncedMachals.length',
+    isOnline,
+    isLoggedIn,
+    unSyncedMachals.length,
+  );
+
+  if (!isOnline || !isLoggedIn || unSyncedMachals.length <= 0) {
     Scheduler.stopService();
     console.log('Stopping Sync Service');
     return;
   }
 
-  console.log('Starting Sync Service')
+  console.log('Starting Sync Service');
   Scheduler.startService();
 };

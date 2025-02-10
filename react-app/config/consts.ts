@@ -2,6 +2,8 @@ export const HEADER_KEYS = {
   Sites: 'X-TC-Site-Ids',
 };
 
+export const API_BASE_URL =
+  'https://hotam.dev.digital.idf.il/api/field/development';
 export const LOCATION_API = '4b0f1b6fee24371fc7f9f7ce8c48e72a';
 export const SITES_ID_STORAGE_KEY = 'mySite';
 export const MSAL_SCOPE = 'api://tik-chalal-dev/all';
@@ -55,7 +57,16 @@ export const FINGER_LABELS = {
   [FINGERS.LITTLE_FINGER_RIGHT]: 'זרת ימין',
 } as const;
 
+export const NO_FINGER_LABELS = {
+  [NO_FINGER_ENUM.NO_FINGER]: 'אצבע לא קיימת',
+  [NO_FINGER_ENUM.FINGER_CUT]: 'אצבע קטועה',
+  [NO_FINGER_ENUM.FINGER_BURNED]: 'אצבע שרופה',
+  [NO_FINGER_ENUM.OTHER]: 'אחר',
+} as const;
+
 export const PRIMARY_EVENTS = 'primaryEvents';
 
 export const ANYTHING_BUT_NUMBERS_REGEX = new RegExp(/[^0-9]/g);
 export const HEBREW_NAME_REGEX = new RegExp(/[^\u0590-\u05FF\s-']/g);
+
+export const REQUEST_TIMEOUT = 20000;

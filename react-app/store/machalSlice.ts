@@ -1,8 +1,14 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {Fingerprint, FingerFile, Machal, MachalType} from '../config/types';
+import {
+  Fingerprint,
+  Machal,
+  CaseType,
+  ViewedStatus,
+  SyncStatus,
+} from '../config/types';
 import {getRandomIDNumber} from '../utils/math.utils';
-import RNFS from 'react-native-fs';
 import {FINGERS} from '../config/consts';
+import {deleteFile} from '../managers/FileManager';
 
 const initialState: Partial<Machal> = {};
 
@@ -10,14 +16,16 @@ export const machalsSlice = createSlice({
   name: 'machals',
   initialState,
   reducers: {
-    startMachal: (state, action: PayloadAction<{type: MachalType}>) => {
+    startMachal: (state, action: PayloadAction<{caseType: CaseType}>) => {
       return {
         id: getRandomIDNumber().toString(),
-        type: action.payload.type,
-        serverSyncStatus: 'needSync',
-        viewStatus: 'new',
+        caseType: action.payload.caseType,
+        syncStatus: SyncStatus.NEED_SYNC,
+        viewStatus: ViewedStatus.NEW,
+        syncAttemts: 0,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        scannerId: 'watson 17 e',
         fingers: {},
       };
     },
@@ -78,7 +86,7 @@ const resetMachalThunk = createAsyncThunk(
             fingerPrint.storageFileName
           ) {
             try {
-              await RNFS.unlink(fingerPrint.storageFileName);
+              await deleteFile(fingerPrint.storageFileName);
             } catch (error) {
               console.warn(
                 `Failed to delete fingerprint file: ${fingerPrint.storageFileName}`,
@@ -90,7 +98,7 @@ const resetMachalThunk = createAsyncThunk(
       );
     }
 
-    dispatch(machalsSlice.actions.resetMachal());
+    dispatch(resetMachal());
   },
 );
 
@@ -108,7 +116,7 @@ const removeFingerPrintForNewMachalThunk = createAsyncThunk(
         fingerPrint.storageFileName
       ) {
         try {
-          await RNFS.unlink(fingerPrint.storageFileName);
+          await deleteFile(fingerPrint.storageFileName);
         } catch (error) {
           console.warn(
             `Failed to delete fingerprint file: ${fingerPrint.storageFileName}`,
@@ -117,7 +125,7 @@ const removeFingerPrintForNewMachalThunk = createAsyncThunk(
         }
       }
 
-      dispatch(machalsSlice.actions.removeFingerPrintForNewMachal(fingerIndex));
+      dispatch(removeFingerPrintForNewMachal(fingerIndex));
     }
   },
 );

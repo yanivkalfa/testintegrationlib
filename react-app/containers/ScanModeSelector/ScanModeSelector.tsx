@@ -5,7 +5,7 @@ import globalStyles from '../../global.styles';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParamList, ScanMode} from '../../config/types';
 import {useDispatch, useSelector} from 'react-redux';
-import {RootState, selectMachalProp} from '../../store/Store';
+import {RootState, selectMachalProp} from '../../store/store';
 import {updateCurrentMachal} from '../../store/machalSlice';
 
 const ScanModeSelector = () => {
@@ -44,14 +44,13 @@ const ScanModeSelector = () => {
       <View style={[globalStyles.section, globalStyles.sectionHorizontal]}>
         <TouchableOpacity
           style={globalStyles.actionButton}
-          onPress={() => updateScanMode(ScanMode.ManualScan)}>
-          <Text style={globalStyles.actionButtonText}>הרכשה ידנית</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[globalStyles.actionButton, globalStyles.actionButtonDisabled]}
-          disabled={true}
           onPress={() => updateScanMode(ScanMode.AutoScan)}>
           <Text style={globalStyles.actionButtonText}>הרכשה אוטומטית</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={globalStyles.actionButton}
+          onPress={() => updateScanMode(ScanMode.ManualScan)}>
+          <Text style={globalStyles.actionButtonText}>הרכשה ידנית</Text>
         </TouchableOpacity>
       </View>
     </View>

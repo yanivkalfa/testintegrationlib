@@ -2,7 +2,7 @@ import React from 'react';
 import {Picker} from '@react-native-picker/picker';
 import {View, Text, TextInput} from 'react-native';
 import {useSelector} from 'react-redux';
-import {RootState, selectMachalProp} from '../../../../store/Store';
+import {RootState, selectMachalProp} from '../../../../store/store';
 import {OriginLocation} from '../../../../config/types';
 import {styles} from './HarkashaDetails.styles';
 import {EventDetailsProps} from '../../Details.types';

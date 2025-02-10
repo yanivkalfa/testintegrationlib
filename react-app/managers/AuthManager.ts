@@ -3,7 +3,7 @@ import PublicClientApplication, {
   MSALAccount,
 } from 'react-native-msal';
 
-import {store} from '../store/Store';
+import {store} from '../store/store';
 import {updateConfig} from '../store/configsSlice';
 import {getMySites} from '../api/sitesApi';
 import {setSiteId} from './SitesManager';
@@ -42,7 +42,7 @@ export const updateIsLoggedIn = async (isLoggedIn: boolean) => {
       console.log('mySites, siteId', mySites, siteId);
       setSiteId(siteId);
     } catch (err) {
-      console.log('errerr', err);
+      console.log('mySites error:', err);
     }
   }
   store.dispatch(updateConfig({name: 'isLoggedIn', value: isLoggedIn}));
@@ -66,19 +66,18 @@ export const getAccessToken = async (): Promise<string | null> => {
 
       if (tokenResponse) {
         return tokenResponse.accessToken;
-      } else {
-        console.error('Token response is undefined.');
       }
-    } catch (e) {
-      console.log('Silent token acquisition failed', e);
-    }
+    } catch (e) {}
+
+    updateIsLoggedIn(false);
   }
 
   return null;
 };
 
 export const login = async (): Promise<string | null> => {
-  if (!(await isDeviceActive())) {
+  const isMobileDeviceActive = await isDeviceActive();
+  if (!isMobileDeviceActive) {
     sendLoginNotification();
     return null;
   }
@@ -91,14 +90,11 @@ export const login = async (): Promise<string | null> => {
     if (tokenResponse) {
       await updateIsLoggedIn(true);
       return tokenResponse.accessToken;
-    } else {
-      console.log('Interactive token response is undefined.');
-      return null;
     }
-  } catch (e) {
-    console.log('Interactive login failed.', e);
-    return null;
-  }
+  } catch (e) {}
+
+  updateIsLoggedIn(false);
+  return null;
 };
 
 export const logout = async (): Promise<void> => {

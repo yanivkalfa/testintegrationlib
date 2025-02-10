@@ -1,14 +1,14 @@
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {getAccessToken, login} from '../managers/AuthManager';
 import {setHeaders} from '../managers/SitesManager';
+import {API_BASE_URL} from '../config/consts';
 
-const baseURL = 'https://hotam.dev.digital.idf.il/api/field/development';
-
-export const createApiInstance = (route?: string) => {
+export const createApiInstance = (route?: string, timeout?: number) => {
   const Api = axios.create({
-    baseURL: `${baseURL}${route}`,
+    baseURL: `${API_BASE_URL}${route}`,
     responseType: 'json',
     withCredentials: true,
+    ...(timeout ? {timeout} : {}),
     headers: {
       'Content-Type': 'application/json',
     },

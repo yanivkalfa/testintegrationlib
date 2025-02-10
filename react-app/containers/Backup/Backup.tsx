@@ -45,7 +45,6 @@
 //       },
 //     );
 
-//     // Cleanup listeners
 //     return () => {
 //       onCaptureUpdatedListener.remove();
 //     };

@@ -29,6 +29,10 @@ export const styles = StyleSheet.create({
     backgroundColor: '#E8F5E9',
     borderColor: '#81C784',
   },
+  fingerButtonError: {
+    backgroundColor: '#FFEBEE',
+    borderColor: '#E57373',
+  },
   fingerText: {
     fontSize: 14,
     fontWeight: 'bold',

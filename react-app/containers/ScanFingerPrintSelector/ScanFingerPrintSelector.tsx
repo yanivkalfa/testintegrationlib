@@ -1,37 +1,40 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {View, Text, TouchableOpacity, ScrollView} from 'react-native';
 import {styles} from './ScanFingerPrintSelector.styles';
 import globalStyles from '../../global.styles';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {RootStackParamList, SelectedFinger} from '../../config/types';
+import {Machal, RootStackParamList, SelectedFinger} from '../../config/types';
 import {useDispatch, useSelector} from 'react-redux';
-import {RootState, selectMachalProp} from '../../store/Store';
-import {FINGER_LABELS, FINGERS} from '../../config/consts';
-import {updateCurrentMachal} from '../../store/machalSlice';
+import {RootState, selectMachal, selectMachalProp} from '../../store/store';
+import {
+  FINGER_LABELS,
+  FINGERS,
+  NO_FINGER_ENUM,
+  NO_FINGER_LABELS,
+} from '../../config/consts';
+import {isFingersObjectEmpty} from '../../utils/general.utils';
+import {addMachal} from '../../store/machalsSlice';
+import {resetMachal} from '../../store/machalSlice';
 
 const ScanFingerPrintSelector = () => {
   const dispatch = useDispatch();
-  const [selectedFinger, setSelectedFinger] = useState<
-    keyof typeof FINGERS | null
-  >(null);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const machalDetails = useSelector((state: RootState) => selectMachal(state));
 
-  const machalFingers = useSelector((state: RootState) =>
-    selectMachalProp(state, 'fingers'),
-  );
-
-  const machalSelectedFinger = useSelector((state: RootState) =>
-    selectMachalProp(state, 'selectedFinger'),
-  );
-
-  const goScanFinger = () => {
-    if (machalSelectedFinger) {
-      navigation.navigate('ScanFinger', {finger: machalSelectedFinger});
+  const goScanFinger = (selectedFinger: SelectedFinger) => {
+    if (selectedFinger) {
+      navigation.navigate('ScanFinger', {finger: selectedFinger});
     }
   };
 
-  const handleFingerSelect = (selectedFinger: SelectedFinger) => {
-    dispatch(updateCurrentMachal({selectedFinger}));
+  const canSend = !isFingersObjectEmpty(machalDetails.fingers);
+  const finishAndSend = () => {
+    if (!canSend) {
+      return false;
+    }
+    dispatch(addMachal(machalDetails as Machal));
+    dispatch(resetMachal());
+    navigation.navigate('Home');
   };
 
   return (
@@ -50,24 +53,34 @@ const ScanFingerPrintSelector = () => {
         ].map((row, rowIndex) => (
           <View key={rowIndex} style={styles.row}>
             {row.map((fingerKey, colIndex) => {
+              const fingerData = machalDetails.fingers?.[fingerKey];
               const hasImage =
-                typeof machalFingers?.[fingerKey] === 'object' &&
-                'storageFileName' in machalFingers[fingerKey];
+                typeof fingerData === 'object' &&
+                'storageFileName' in fingerData;
+              const isNoFinger =
+                typeof fingerData === 'string' &&
+                Object.values(NO_FINGER_ENUM).includes(fingerData);
+
               return (
                 <TouchableOpacity
                   key={colIndex}
-                  onPress={() => handleFingerSelect(fingerKey)}
+                  onPress={() => goScanFinger(fingerKey)}
                   style={[
                     styles.fingerButton,
                     hasImage && styles.fingerButtonChecked,
-                    machalSelectedFinger === fingerKey &&
-                      styles.fingerButtonSelected,
+                    isNoFinger && styles.fingerButtonError,
                   ]}>
                   <Text style={styles.fingerText}>
                     {FINGER_LABELS[fingerKey]}
                   </Text>
                   <Text style={styles.statusText}>
-                    {hasImage ? 'נסרק' : 'טרם נסרק'}
+                    {hasImage
+                      ? 'נסרק'
+                      : isNoFinger
+                      ? NO_FINGER_LABELS[
+                          fingerData as keyof typeof NO_FINGER_ENUM
+                        ]
+                      : 'טרם נסרק'}
                   </Text>
                 </TouchableOpacity>
               );
@@ -77,15 +90,21 @@ const ScanFingerPrintSelector = () => {
       </ScrollView>
       <View style={[globalStyles.section, globalStyles.sectionHorizontal]}>
         <TouchableOpacity
+          style={[globalStyles.actionButton, !canSend && globalStyles.disabled]}
+          onPress={finishAndSend}
+          disabled={!canSend}>
+          <Text
+            style={[
+              globalStyles.actionButtonText,
+              !canSend && globalStyles.disabled,
+            ]}>
+            שליחה
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
           style={globalStyles.abortButton}
           onPress={() => navigation.goBack()}>
           <Text style={globalStyles.abortButtonText}>ביטול</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={globalStyles.actionButton}
-          onPress={() => goScanFinger()}
-          disabled={!machalSelectedFinger}>
-          <Text style={globalStyles.actionButtonText}>המשך</Text>
         </TouchableOpacity>
       </View>
     </View>

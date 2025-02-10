@@ -3,15 +3,21 @@ import {View, Text, Image, TouchableOpacity} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 
-import {MachalType, RootStackParamList} from '../../config/types';
+import {CaseType, RootStackParamList} from '../../config/types';
 import {createImagesFolder} from '../../managers/FileManager';
 
-import {RootState, selectUnsyncedMachals} from '../../store/Store';
-import {updateConfig} from '../../store/configsSlice';
-import {checkSyncStatus} from '../../managers/SyncMachalsManager';
-import {styles} from './Home.styles';
+import {
+  AppDispatch,
+  RootState,
+  selectMachals,
+  selectUnsyncedMachals,
+} from '../../store/store';
 
+import {styles} from './Home.styles';
+import {updateConfig} from '../../store/configsSlice';
 import {startMachal} from '../../store/machalSlice';
+import {deleteMachalThunk} from '../../store/machalsSlice';
+
 import {
   getAccessToken,
   initClientMsal,
@@ -19,16 +25,23 @@ import {
   logout,
   updateIsLoggedIn,
 } from '../../managers/AuthManager';
-import {getMySites} from '../../api/sitesApi';
+import {checkSyncStatus} from '../../managers/SyncMachalsManager';
 import {getCurrSiteId} from '../../managers/SitesManager';
 
+import {getMySites} from '../../api/sitesApi';
+import {checkConnectedDevicesPermissions} from '../../managers/ScannerManager';
+
 const App = (): React.JSX.Element => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const {isOnline, isLoggedIn, imgFolderCreated} = useSelector(
     (state: RootState) => state.appConfig,
   );
+
   const unsyncedMachals = useSelector(selectUnsyncedMachals);
+  const allMachals = useSelector(selectMachals);
+  console.log('unsyncedMachals', unsyncedMachals);
+  console.log('allMachals', allMachals);
 
   useEffect(() => {
     if (!imgFolderCreated) {
@@ -47,27 +60,24 @@ const App = (): React.JSX.Element => {
   }, [isOnline, isLoggedIn, unsyncedMachals]);
 
   useEffect(() => {
-    const initialize = async () => {
+    const authenticate = async () => {
       await initClientMsal();
-      //logout();
       const accessToken = await getAccessToken();
-      //console.log('accessToken', accessToken);
-      if (!accessToken) {
-        //login();
-      }
       if (accessToken) {
-        await updateIsLoggedIn(true);
-        console.log('ggggggggggggggg', await getCurrSiteId());
-        //const res = await getMySites();
-        //console.log('res', res);
+        console.log('yes access token');
+        updateIsLoggedIn(true);
+      } else {
+        console.log('No access token');
+        login();
       }
     };
 
-    initialize();
+    checkConnectedDevicesPermissions();
+    authenticate();
   }, []);
 
-  const handlePress = (type: MachalType) => {
-    //dispatch(startMachal({type}));
+  const handlePress = (caseType: CaseType) => {
+    dispatch(startMachal({caseType}));
     navigation.navigate('Atzada');
   };
 
@@ -106,12 +116,12 @@ const App = (): React.JSX.Element => {
         <View style={styles.buttons}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => handlePress(MachalType.Machal)}>
+            onPress={() => handlePress(CaseType.Machal)}>
             <Text style={styles.buttonText}>חלל</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => handlePress(MachalType.Wounded)}>
+            onPress={() => handlePress(CaseType.Wounded)}>
             <Text style={styles.buttonText}>פצוע אלמוני</Text>
           </TouchableOpacity>
         </View>
@@ -121,3 +131,18 @@ const App = (): React.JSX.Element => {
 };
 
 export default App;
+
+// useEffect(() => {
+//   const deleteAllMachal = async () => {
+//     try {
+//       for (const machal of allMachals) {
+//         console.log('Deleting machal:', machal);
+//         await dispatch(deleteMachalThunk(machal.id)).unwrap();
+//       }
+//     } catch (error) {
+//       console.error('Error while deleting machals:', error);
+//     }
+//   };
+
+//   deleteAllMachal();
+// }, [allMachals, dispatch]);

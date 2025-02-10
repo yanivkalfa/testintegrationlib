@@ -4,7 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 
-import {store, persistor} from './store/Store';
+import {store, persistor} from './store/store';
 import {RootStackParamList} from './config/types';
 
 import Home from './containers/Home/Home';
@@ -14,6 +14,7 @@ import ScanModeSelector from './containers/ScanModeSelector/ScanModeSelector';
 import ScanFingerPrintSelector from './containers/ScanFingerPrintSelector/ScanFingerPrintSelector';
 import ScanFinger from './containers/ScanFinger/ScanFinger';
 
+import './managers/ScannerManager';
 import './managers/SyncMachalsManager';
 import './managers/NetworkManager';
 import './managers/AuthManager';

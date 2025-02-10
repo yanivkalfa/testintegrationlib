@@ -1,31 +1,37 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
-import RNFS from 'react-native-fs';
-import {styles} from './ScanFinger.styles';
-import globalStyles from '../../global.styles';
 import {
   useRoute,
   RouteProp,
   useNavigation,
   NavigationProp,
 } from '@react-navigation/native';
-import {
-  FingerFile,
-  RootStackParamList,
-  SelectedFinger,
-} from '../../config/types';
-import {FINGER_LABELS} from '../../config/consts';
 import {useDispatch, useSelector} from 'react-redux';
-import {RootState, selectMachalProp} from '../../store/Store';
+import {styles} from './ScanFinger.styles';
+import globalStyles from '../../global.styles';
+import {Fingerprint, RootStackParamList} from '../../config/types';
+import {FINGER_LABELS, NO_FINGER_ENUM} from '../../config/consts';
 import {
-  addOrUpdateFingerPrintForNewMachal,
-  updateCurrentMachal,
-} from '../../store/machalSlice';
+  RootState,
+  selectAppConfigsValue,
+  selectMachalProp,
+} from '../../store/store';
+import {addOrUpdateFingerPrintForNewMachal} from '../../store/machalSlice';
 import {saveFile} from '../../managers/FileManager';
 
-import {testPrintBase64} from '../../assets/testPrintBase64'; // just a mock
+import Scanner from '../Scanner/Scanner';
+import {
+  beginCaptureImage,
+  cancelCaptureImage,
+} from '../../managers/ScannerManager';
+import NoFingerReasons from './components/NoFingerReasons/NoFingerReasons';
 
 const ScanFinger = () => {
+  const [canScan, setCanScan] = useState<boolean>(true);
+  const [scannedPrint, setScannedPrint] = useState<string>('');
+  const [selectedReason, setSelectedReason] = useState<
+    keyof typeof NO_FINGER_ENUM
+  >(NO_FINGER_ENUM.OTHER);
   const dispatch = useDispatch();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'ScanFinger'>>();
@@ -34,35 +40,63 @@ const ScanFinger = () => {
     selectMachalProp(state, 'id'),
   );
 
-  const handleFingerSelect = (selectedFinger: SelectedFinger) => {
-    dispatch(updateCurrentMachal({selectedFinger}));
-  };
+  const isDeviceConnected = useSelector((state: RootState) =>
+    selectAppConfigsValue(state, 'isDeviceConnected'),
+  );
+
+  const canContinue = canScan ? !!scannedPrint : !!selectedReason;
 
   const onContinue = async () => {
+    if (!canContinue) {
+      return false;
+    }
     if (!machalId) {
       console.error('Machal ID is missing!');
       return;
     }
 
     try {
-      const fileName = `${machalId}_${finger}.base64`;
-      await saveFile(fileName, testPrintBase64);
-      const fingerPrint: FingerFile = {
-        storageFileName: fileName,
-        height: 200,
-        width: 200,
-      };
+      let fingerPrint: Fingerprint = selectedReason;
+      if (canScan) {
+        const fileName = `${machalId}_${finger}.base64`;
+        await saveFile(fileName, scannedPrint);
+        fingerPrint = {
+          storageFileName: fileName,
+          height: 200,
+          width: 200,
+        };
+      }
       console.log('fingerPrint', fingerPrint);
       dispatch(
         addOrUpdateFingerPrintForNewMachal({fingerIndex: finger, fingerPrint}),
       );
-      handleFingerSelect(null);
       navigation.goBack();
       console.log(`Fingerprint saved and added for ${finger}:`, fingerPrint);
     } catch (error) {
       console.error('Error saving fingerprint:', error);
     }
   };
+
+  const handleCanScane = () => {
+    if (isDeviceConnected) {
+      setCanScan(true);
+      setSelectedReason(NO_FINGER_ENUM.OTHER);
+      beginCaptureImage();
+    }
+  };
+
+  const handleCantScane = () => {
+    setCanScan(false);
+    if (isDeviceConnected) {
+      cancelCaptureImage();
+    }
+  };
+
+  const handleScanCompleted = (printBase64: string) => {
+    setScannedPrint(printBase64);
+  };
+
+  console.log('isDeviceConnected', isDeviceConnected);
 
   return (
     <View style={globalStyles.container}>
@@ -72,9 +106,7 @@ const ScanFinger = () => {
         </Text>
       </View>
 
-      <View style={[globalStyles.section, globalStyles.sectionMain]}>
-        <Text style={styles.fingerprintText}>Fingerprint</Text>
-      </View>
+      <Scanner value={scannedPrint} onScanCompleted={handleScanCompleted} />
 
       <View style={styles.fingerprintContainer}>
         <Text style={styles.fingerprintInstruction}>
@@ -87,18 +119,51 @@ const ScanFinger = () => {
 
       <View style={globalStyles.section}>
         <View style={globalStyles.sectionHorizontal}>
-          <TouchableOpacity style={globalStyles.abortButton} onPress={() => {}}>
+          <TouchableOpacity
+            style={[
+              globalStyles.abortButton,
+              !canScan && globalStyles.actionButtonSelected,
+            ]}
+            onPress={handleCantScane}>
             <Text style={globalStyles.abortButtonText}>לא ניתן לסרוק</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={globalStyles.abortButton} onPress={() => {}}>
-            <Text style={globalStyles.abortButtonText}>הרכשה מסורקת</Text>
+          <TouchableOpacity
+            style={[
+              globalStyles.abortButton,
+              canScan && isDeviceConnected && globalStyles.actionButtonSelected,
+              !isDeviceConnected && globalStyles.disabled,
+            ]}
+            onPress={handleCanScane}>
+            <Text
+              style={[
+                globalStyles.abortButtonText,
+                !isDeviceConnected && globalStyles.disabled,
+              ]}>
+              הרכשה מסורק
+            </Text>
           </TouchableOpacity>
         </View>
+        {!canScan && (
+          <NoFingerReasons
+            onSelect={setSelectedReason}
+            value={selectedReason}
+          />
+        )}
         <View style={styles.continueButtonContainer}>
           <TouchableOpacity
-            style={styles.continueButton}
+            style={[
+              styles.continueButton,
+              !canContinue && globalStyles.disabled,
+            ]}
+            disabled={!canContinue}
             onPress={() => onContinue()}>
-            <Text style={globalStyles.actionButtonText}>המשך</Text>
+            <Text
+              style={[
+                globalStyles.actionButtonText,
+                !canContinue && globalStyles.disabled,
+              ]}>
+              המשך
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

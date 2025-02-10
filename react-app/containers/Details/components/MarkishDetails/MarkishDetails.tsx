@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {View, Text, TextInput} from 'react-native';
 import {useSelector} from 'react-redux';
-import {RootState, selectMachalProp} from '../../../../store/Store';
+import {RootState, selectMachalProp} from '../../../../store/store';
 import {styles} from './MarkishDetails.styles';
 import {EventDetailsProps} from '../../Details.types';
 import {getAccounts} from '../../../../managers/AuthManager';

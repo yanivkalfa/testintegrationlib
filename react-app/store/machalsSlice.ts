@@ -1,6 +1,7 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {createSlice, PayloadAction, createAsyncThunk} from '@reduxjs/toolkit';
 import {Fingerprint, Machal, Machals} from '../config/types';
 import {FINGERS} from '../config/consts';
+import {deleteFile} from '../managers/FileManager';
 
 const initialState: Machals = [];
 
@@ -14,7 +15,6 @@ export const machalsSlice = createSlice({
         state.push(action.payload);
       }
     },
-
     updateMachal: (
       state,
       action: PayloadAction<{id: string; updatedMachal: Partial<Machal>}>,
@@ -32,18 +32,16 @@ export const machalsSlice = createSlice({
         );
       }
     },
-
     deleteMachal: (state, action: PayloadAction<string>) => {
       const index = state.findIndex(machal => machal.id === action.payload);
       if (index !== -1) {
-        state.splice(index, 1);
+        state.splice(index, 1); // Remove the machal from the state
       } else {
         console.warn(
           `Machal with id "${action.payload}" not found. Delete operation skipped.`,
         );
       }
     },
-
     addOrUpdateFingerPrint: (
       state,
       action: PayloadAction<{
@@ -66,7 +64,6 @@ export const machalsSlice = createSlice({
         );
       }
     },
-
     removeFingerPrint: (
       state,
       action: PayloadAction<{id: string; fingerIndex: keyof typeof FINGERS}>,
@@ -88,6 +85,39 @@ export const machalsSlice = createSlice({
     },
   },
 });
+
+export const deleteMachalThunk = createAsyncThunk(
+  'machals/deleteMachal',
+  async (id: string, {dispatch, getState}) => {
+    const state = getState() as {machals: Machals};
+    const machal = state.machals.find(machal => machal.id === id);
+
+    if (machal && machal.fingers) {
+      await Promise.all(
+        Object.values(machal.fingers).map(async fingerPrint => {
+          if (
+            typeof fingerPrint === 'object' &&
+            'storageFileName' in fingerPrint &&
+            fingerPrint.storageFileName
+          ) {
+            try {
+              await deleteFile(fingerPrint.storageFileName);
+              console.log(
+                `Deleted fingerprint file: ${fingerPrint.storageFileName}`,
+              );
+            } catch (error) {
+              console.warn(
+                `Failed to delete fingerprint file: ${fingerPrint.storageFileName}`,
+                error,
+              );
+            }
+          }
+        }),
+      );
+    }
+    dispatch(deleteMachal(id));
+  },
+);
 
 export const {
   addMachal,

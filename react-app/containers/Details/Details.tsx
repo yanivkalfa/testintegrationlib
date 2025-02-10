@@ -16,7 +16,7 @@ import {
   Selector,
 } from '../../config/types';
 import {useDispatch, useSelector} from 'react-redux';
-import {RootState, selectMachalProp} from '../../store/Store';
+import {RootState, selectMachalProp} from '../../store/store';
 import {updateCurrentMachal} from '../../store/machalSlice';
 import EventDetails from './components/EventDetails/EventDetails';
 import {formatDate} from '../../utils/date.utils';
