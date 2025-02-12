@@ -6,8 +6,9 @@ import {
   TouchableOpacity,
   Text,
 } from 'react-native';
-import LocationIcon from './components/LocationIcon/LocationIcon';
+
 import {styles} from './LocationInput.styles';
+
 import {
   fetchCurrentLocationDetails,
   getCurrentCity,
@@ -15,10 +16,11 @@ import {
 import {
   CityName,
   ErrorTypes,
-  LocationChanged,
   LocationError,
   LocationInputProps,
 } from './LocationInput.types';
+
+import LocationIcon from './components/LocationIcon/LocationIcon';
 
 const Errors = {
   [ErrorTypes.POSITION]: 'Unable to fetch location',

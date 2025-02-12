@@ -25,10 +25,6 @@ export type LocationError = {
   error: any;
 };
 
-export type LocationChanged = (
-  locationDetails: CityDetails[] | undefined,
-) => void;
-
 export type CityName = string | undefined;
 export type LocationInputProps = {
   onChange: (value: CityName) => void;

@@ -20,7 +20,6 @@ export const createApiInstance = (route?: string, timeout?: number) => {
     if (msalAccessToken) {
       req.headers['Authorization'] = `Bearer ${msalAccessToken}`;
     }
-
     return req;
   });
 

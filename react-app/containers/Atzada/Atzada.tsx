@@ -1,21 +1,23 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {View, Text, TouchableOpacity, TextInput} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {styles} from './Atzada.styles';
 import {
   useCameraPermission,
   Camera,
   useCameraDevice,
   useCodeScanner,
 } from 'react-native-vision-camera';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+
+import {styles} from './Atzada.styles';
+
 import {codeTypes} from './Atzada.types';
 import {updateCurrentMachal} from '../../store/machalSlice';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from '../../config/types';
 import {getRandomIDNumber} from '../../utils/math.utils';
 import {RootState, selectMachalProp} from '../../store/store';
 
-const Atzada = () => {
+const Atzada: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useDispatch();
   const machalCaseType = useSelector((state: RootState) =>
@@ -95,6 +97,10 @@ const Atzada = () => {
     setScannedCode(getRandomIDNumber());
   };
 
+  const onMachalIdChange = (machalId: string | null) => {
+    setScannedCode(machalId);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -116,6 +122,7 @@ const Atzada = () => {
           placeholder="הזן מספר מח''ל"
           style={styles.input}
           value={scannedCode || ''}
+          onChangeText={text => onMachalIdChange(text)}
         />
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.secondaryButton} onPress={onNoId}>

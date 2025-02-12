@@ -1,13 +1,11 @@
 import React from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
-import {styles} from './NoFingerReasons.styles';
-import globalStyles from '../../../../global.styles';
-import {NO_FINGER_ENUM, NO_FINGER_LABELS} from '../../../../config/consts';
 
-type NoFingerReasonsProps = {
-  onSelect: (value: keyof typeof NO_FINGER_ENUM) => void;
-  value: keyof typeof NO_FINGER_ENUM | null;
-};
+import globalStyles from '../../../../global.styles';
+import {styles} from './NoFingerReasons.styles';
+
+import {NO_FINGER_ENUM, NO_FINGER_LABELS} from '../../../../config/consts';
+import {NoFingerReasonsProps} from './NoFingerReasons.types';
 
 const NoFingerReasons: React.FC<NoFingerReasonsProps> = ({onSelect, value}) => {
   const reasons = Object.keys(

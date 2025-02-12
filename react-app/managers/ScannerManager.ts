@@ -2,6 +2,8 @@ import {NativeModules, DeviceEventEmitter} from 'react-native';
 
 import {selectAppConfigsValue, store} from '../store/store';
 import {updateConfig} from '../store/configsSlice';
+import {DeviceDetails} from '../config/types';
+import {updateCurrentMachal} from '../store/machalSlice';
 const {ScannerModule} = NativeModules;
 
 const updateScannerIsConnected = (value: boolean) => {
@@ -17,11 +19,15 @@ DeviceEventEmitter.addListener('onPermissionDenied', () => {
   updateScannerIsConnected(false);
 });
 
-DeviceEventEmitter.addListener('onDeviceReadyForScanning', (value: string) => {
-  console.log('onDeviceReadyForScanning', value);
-  updateScannerIsConnected(true);
-  store.dispatch(updateConfig({name: 'connectedDeviceName', value}));
-});
+DeviceEventEmitter.addListener(
+  'onDeviceReadyForScanning',
+  ({productName, fwVersion, serialNumber}: DeviceDetails) => {
+    const value = `${productName}_${fwVersion} (${serialNumber})`;
+    updateScannerIsConnected(true);
+    store.dispatch(updateConfig({name: 'connectedDeviceName', value}));
+    store.dispatch(updateCurrentMachal({scannerId: value}));
+  },
+);
 
 export const beginCaptureImage = () => {
   const isDeviceConnected = selectAppConfigsValue(

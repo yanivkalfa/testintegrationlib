@@ -10,25 +10,23 @@ import {getRandomIDNumber} from '../utils/math.utils';
 import {FINGERS} from '../config/consts';
 import {deleteFile} from '../managers/FileManager';
 
-const initialState: Partial<Machal> = {};
+const initialDefaultState: Partial<Machal> = {
+  caseType: CaseType.Machal,
+  syncStatus: SyncStatus.NEED_SYNC,
+  viewStatus: ViewedStatus.NEW,
+  syncAttemts: 0,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  scannerId: 'watson 17 e',
+  fingers: {},
+};
+
+const initialState: Partial<Machal> = {...initialDefaultState};
 
 export const machalsSlice = createSlice({
   name: 'machals',
   initialState,
   reducers: {
-    startMachal: (state, action: PayloadAction<{caseType: CaseType}>) => {
-      return {
-        id: getRandomIDNumber().toString(),
-        caseType: action.payload.caseType,
-        syncStatus: SyncStatus.NEED_SYNC,
-        viewStatus: ViewedStatus.NEW,
-        syncAttemts: 0,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        scannerId: 'watson 17 e',
-        fingers: {},
-      };
-    },
     updateCurrentMachal: (
       state,
       action: PayloadAction<Partial<Omit<Machal, 'fingers'>>>,
@@ -41,7 +39,7 @@ export const machalsSlice = createSlice({
       };
     },
     resetMachal: () => {
-      return {};
+      return {...initialDefaultState};
     },
     addOrUpdateFingerPrintForNewMachal: (
       state,
@@ -131,7 +129,6 @@ const removeFingerPrintForNewMachalThunk = createAsyncThunk(
 );
 
 export const {
-  startMachal,
   updateCurrentMachal,
   resetMachal,
   addOrUpdateFingerPrintForNewMachal,

@@ -48,9 +48,13 @@ export const selectMachalsById = createSelector(
 );
 
 export const selectMachalProp = <K extends keyof Machal>(
-  {machal}: RootState,
+  state: RootState,
   property: K,
 ): Machal[K] | null => {
-  const value = machal[property];
-  return value === undefined ? null : value;
+  const machal = state.machal as Machal;
+
+  if (!machal || !(property in machal)) {
+    return null;
+  }
+  return machal[property] ?? null;
 };

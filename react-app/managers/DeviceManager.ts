@@ -15,7 +15,6 @@ const updateScreenStatus = async () => {};
 DeviceEventEmitter.addListener(EVENT_NAME, updateScreenStatus);
 
 const handleAppStateChange = (nextAppState: AppStateStatus) => {
-  console.log('zzzzzzzzzzzzzzzzzzzzzzzzzzzzz');
   if (nextAppState === 'active') {
   }
 };

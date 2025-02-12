@@ -7,20 +7,26 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import {styles} from './Details.styles';
+import {useDispatch, useSelector} from 'react-redux';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
+
+import {styles} from './Details.styles';
+
 import {
+  CaseType,
   Gender,
   HarkashaDescription,
   RootStackParamList,
   Selector,
 } from '../../config/types';
-import {useDispatch, useSelector} from 'react-redux';
+
 import {RootState, selectMachalProp} from '../../store/store';
 import {updateCurrentMachal} from '../../store/machalSlice';
-import EventDetails from './components/EventDetails/EventDetails';
 import {formatDate} from '../../utils/date.utils';
 import {UpdateMachalProp} from './Details.types';
+import {formatMachalId, formatWoundedId} from '../../utils/general.utils';
+
+import EventDetails from './components/EventDetails/EventDetails';
 import HarkashaDetails from './components/HarkashaDetails/HarkashaDetails';
 import MarkishDetails from './components/MarkishDetails/MarkishDetails';
 
@@ -36,7 +42,7 @@ const genderMachalEnumValues = Object.values(Gender).map((option, index) => ({
   name: option,
 }));
 
-const Details = () => {
+const Details: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useDispatch();
   const machalId = useSelector((state: RootState) =>
@@ -45,6 +51,9 @@ const Details = () => {
 
   const machalMimtza = useSelector((state: RootState) =>
     selectMachalProp(state, 'mimtza'),
+  );
+  const machalCaseType = useSelector((state: RootState) =>
+    selectMachalProp(state, 'caseType'),
   );
 
   const machalGender = useSelector((state: RootState) =>
@@ -88,7 +97,11 @@ const Details = () => {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>זיהוי</Text>
-        <Text style={styles.headerSubtitle}>{machalId}</Text>
+        <Text style={styles.headerSubtitle}>
+          {machalCaseType === CaseType.Wounded
+            ? formatWoundedId(machalId || '')
+            : formatMachalId(machalId || '')}
+        </Text>
       </View>
 
       <View style={styles.section}>

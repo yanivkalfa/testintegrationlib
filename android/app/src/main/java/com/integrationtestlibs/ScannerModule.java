@@ -6,6 +6,11 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Arguments;
+
+import com.integratedbiometrics.ibscanultimate.IBScan;
+import com.integratedbiometrics.ibscanultimate.IBScan.DeviceDesc;
 
 public class ScannerModule extends ReactContextBaseJavaModule {
     private static final String TAG = "ScannerModule";
@@ -31,8 +36,12 @@ public class ScannerModule extends ReactContextBaseJavaModule {
             }
 
             @Override
-            public void onDeviceReadyForScanning(int deviceId, String deviceName) {
-                sendEvent("onDeviceReadyForScanning", deviceName);
+            public void onDeviceReadyForScanning(int deviceId, DeviceDesc deviceDesc) {
+                WritableMap map = Arguments.createMap();
+                map.putString("productName", deviceDesc.productName);
+                map.putString("fwVersion", deviceDesc.fwVersion);
+                map.putString("serialNumber", deviceDesc.serialNumber);
+                sendEvent("onDeviceReadyForScanning", map);
             }
 
             @Override
@@ -80,6 +89,14 @@ public class ScannerModule extends ReactContextBaseJavaModule {
         }
     }
 
+    private void sendEvent(String eventName, WritableMap params) {
+        ReactApplicationContext context = getReactApplicationContext();
+        if (context.hasActiveCatalystInstance()) {
+            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                    .emit(eventName, params);
+        }
+    }
+
     private String imageToBase64(Bitmap image) {
         java.io.ByteArrayOutputStream byteArrayOutputStream = new java.io.ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
@@ -96,6 +113,7 @@ public class ScannerModule extends ReactContextBaseJavaModule {
     public void beginCaptureImage() {
         scannerHelper.beginCaptureImage();
     }
+
     @ReactMethod
     public void cancelCaptureImage() {
         scannerHelper.cancelCaptureImage();

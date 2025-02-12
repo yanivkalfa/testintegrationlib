@@ -1,12 +1,14 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ConfigState, UpdateConfigPayload } from '../config/types';
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {ConfigState, UpdateConfigPayload} from '../config/types';
+import {DEFAULT} from '../config/consts';
 
 const initialState: ConfigState = {
   imgFolderCreated: false,
+  theme: DEFAULT,
   isOnline: true,
   isLoggedIn: true,
   isDeviceConnected: false,
-  connectedDeviceName: ''
+  connectedDeviceName: '',
 };
 
 export const configSlice = createSlice({
@@ -14,11 +16,11 @@ export const configSlice = createSlice({
   initialState,
   reducers: {
     updateConfig: (state, action: PayloadAction<UpdateConfigPayload>) => {
-      const { name, value } = action.payload;
+      const {name, value} = action.payload;
       (state[name] as ConfigState[typeof name]) = value;
     },
   },
 });
 
-export const { updateConfig } = configSlice.actions;
+export const {updateConfig} = configSlice.actions;
 export default configSlice.reducer;

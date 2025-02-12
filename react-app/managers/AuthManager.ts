@@ -39,7 +39,7 @@ export const updateIsLoggedIn = async (isLoggedIn: boolean) => {
     try {
       const mySites = await getMySites();
       const siteId = mySites[0].id.toString();
-      console.log('mySites, siteId', mySites, siteId);
+      //console.log('mySites, siteId', mySites, siteId);
       setSiteId(siteId);
     } catch (err) {
       console.log('mySites error:', err);

@@ -11,6 +11,7 @@ export type RootStackParamList = {
 
 export type ConfigState = {
   imgFolderCreated: boolean;
+  theme: string;
   isOnline: boolean;
   isLoggedIn: boolean;
   isDeviceConnected: boolean;
@@ -183,4 +184,10 @@ export type NotificationPayload = {
   body: string;
   deepLink: string;
   id?: string;
+};
+
+export type DeviceDetails = {
+  productName: string;
+  fwVersion: string;
+  serialNumber: string;
 };

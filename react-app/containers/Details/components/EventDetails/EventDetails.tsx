@@ -2,13 +2,16 @@ import React, {useEffect, useState} from 'react';
 import {Picker} from '@react-native-picker/picker';
 import {View, Text, TextInput, ActivityIndicator} from 'react-native';
 import {useSelector} from 'react-redux';
+
+import {styles} from './EventDetails.styles';
+
 import {RootState, selectMachalProp} from '../../../../store/store';
 import {PrimaryEvent, Selector} from '../../../../config/types';
 import {getPrimeEvents} from '../../../../api/eventsApi';
-import {styles} from './EventDetails.styles';
 import {EventDetailsProps} from '../../Details.types';
-import {vault} from '../../../../managers/StorageManager';
 import {PRIMARY_EVENTS} from '../../../../config/consts';
+
+import {vault} from '../../../../managers/StorageManager';
 
 const defaultPrimaryEvents = Object.values(PrimaryEvent).map(
   (option, index) => ({

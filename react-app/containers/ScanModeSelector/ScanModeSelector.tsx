@@ -1,18 +1,28 @@
 import React from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
-import {styles as ScanModeSelectorStyles} from './ScanModeSelector.styles';
-import globalStyles from '../../global.styles';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {RootStackParamList, ScanMode} from '../../config/types';
 import {useDispatch, useSelector} from 'react-redux';
-import {RootState, selectMachalProp} from '../../store/store';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+
+import globalStyles from '../../global.styles';
+import {styles as ScanModeSelectorStyles} from './ScanModeSelector.styles';
+
+import {RootStackParamList, ScanMode} from '../../config/types';
+import {
+  RootState,
+  selectAppConfigsValue,
+  selectMachalProp,
+} from '../../store/store';
 import {updateCurrentMachal} from '../../store/machalSlice';
 
-const ScanModeSelector = () => {
+const ScanModeSelector: React.FC = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const machalId = useSelector((state: RootState) =>
     selectMachalProp(state, 'id'),
+  );
+
+  const connectedDeviceName = useSelector((state: RootState) =>
+    selectAppConfigsValue(state, 'connectedDeviceName'),
   );
 
   const updateScanMode = (value: ScanMode) => {
@@ -35,9 +45,7 @@ const ScanModeSelector = () => {
 
       <View style={globalStyles.section}>
         <Text style={globalStyles.sectionTitle}>פרטי סורק</Text>
-        <Text style={globalStyles.sectionSubTitle}>
-          WATSON_v2.0.1 (WM1129C-31900089-000K)
-        </Text>
+        <Text style={globalStyles.sectionSubTitle}>{connectedDeviceName}</Text>
         <Text style={ScanModeSelectorStyles.footerText}>V: 3.11.40a</Text>
       </View>
 

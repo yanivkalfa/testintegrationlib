@@ -17,6 +17,7 @@ const updateMachalSyncStatus = async (
 const EVENT_NAME = 'SchedulerEvent';
 const syncMachals = async () => {
   console.log('syncMachals happening');
+  //return false;
   const state = store.getState();
   const unSyncedMachals: Machals = selectUnsyncedMachals(state);
   for (const machal of unSyncedMachals) {
@@ -27,9 +28,14 @@ const syncMachals = async () => {
         syncStatus: SyncStatus.SYNC_IN_PROGRESS,
         updatedAt: new Date().toISOString(),
       });
-      await upsertCase(machal.id, data);
+      const response = await upsertCase(machal.id, data);
+      console.log('response: ', response);
+      updateMachalSyncStatus(machal.id, {
+        syncStatus: SyncStatus.SYNCED,
+        updatedAt: new Date().toISOString(),
+      });
     } catch (error: any) {
-      console.log('error', error);
+      console.log('ERROR', error);
       if (error.code === 'ECONNABORTED') {
         updateMachalSyncStatus(machal.id, {
           syncStatus: SyncStatus.NEED_SYNC,

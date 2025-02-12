@@ -1,35 +1,12 @@
 import React, {useEffect, useRef} from 'react';
 import {View, DeviceEventEmitter} from 'react-native';
-import Canvas, {Image as CanvasImage} from 'react-native-canvas';
-import {styles} from './Scanner.styles';
+import Canvas from 'react-native-canvas';
+
 import globalStyles from '../../global.styles';
+import {styles} from './Scanner.styles';
 
-const getBase64ImgUri = (base64Image: string) => {
-  return `data:image/png;base64,${base64Image}`;
-};
-
-const loadAndDrawImage = async (
-  canvas: Canvas,
-  base64Image: string,
-): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    const context = canvas.getContext('2d');
-    const img = new CanvasImage(canvas);
-    img.src = getBase64ImgUri(base64Image);
-    img.addEventListener('load', () => {
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.drawImage(img, 0, 0, canvas.width, canvas.height);
-      resolve();
-    });
-
-    img.addEventListener('error', reject);
-  });
-};
-
-type ScannerProps = {
-  onScanCompleted: (base64Image: string) => void;
-  value: string;
-};
+import {loadAndDrawImage} from './Scanner.utils';
+import {ScannerProps} from './Scanner.types';
 
 const Scanner: React.FC<ScannerProps> = ({onScanCompleted, value}) => {
   const canvasRef = useRef(null);

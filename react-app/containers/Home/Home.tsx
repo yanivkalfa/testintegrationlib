@@ -1,10 +1,21 @@
 import React, {useEffect} from 'react';
-import {View, Text, Image, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 
-import {CaseType, RootStackParamList} from '../../config/types';
+import {styles} from './Home.styles';
+
+import {CaseType, RootStackParamList, SyncStatus} from '../../config/types';
+
 import {createImagesFolder} from '../../managers/FileManager';
+import {
+  getAccessToken,
+  initClientMsal,
+  login,
+  updateIsLoggedIn,
+} from '../../managers/AuthManager';
+import {checkSyncStatus} from '../../managers/SyncMachalsManager';
+import {checkConnectedDevicesPermissions} from '../../managers/ScannerManager';
 
 import {
   AppDispatch,
@@ -12,26 +23,16 @@ import {
   selectMachals,
   selectUnsyncedMachals,
 } from '../../store/store';
-
-import {styles} from './Home.styles';
 import {updateConfig} from '../../store/configsSlice';
-import {startMachal} from '../../store/machalSlice';
-import {deleteMachalThunk} from '../../store/machalsSlice';
+import {updateCurrentMachal} from '../../store/machalSlice';
+import {deleteMachalThunk, updateMachal} from '../../store/machalsSlice';
+import {useTheme} from '../../theme/hook/useTheme';
 
-import {
-  getAccessToken,
-  initClientMsal,
-  login,
-  logout,
-  updateIsLoggedIn,
-} from '../../managers/AuthManager';
-import {checkSyncStatus} from '../../managers/SyncMachalsManager';
-import {getCurrSiteId} from '../../managers/SitesManager';
+import Logo from '../../assets/logo.svg';
 
-import {getMySites} from '../../api/sitesApi';
-import {checkConnectedDevicesPermissions} from '../../managers/ScannerManager';
+const App: React.FC = () => {
+  const globalStyles = useTheme();
 
-const App = (): React.JSX.Element => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const {isOnline, isLoggedIn, imgFolderCreated} = useSelector(
@@ -77,19 +78,39 @@ const App = (): React.JSX.Element => {
   }, []);
 
   const handlePress = (caseType: CaseType) => {
-    dispatch(startMachal({caseType}));
+    dispatch(updateCurrentMachal({caseType}));
     navigation.navigate('Atzada');
   };
 
+  useEffect(() => {
+    // console.log('zzzzzzzzzzzzzzzzzzzzzzzzzzzzz');
+    // dispatch(
+    //   updateMachal({
+    //     id: '9876543210',
+    //     updatedMachal: {syncStatus: SyncStatus.NEED_SYNC},
+    //   }),
+    // );
+  }, []);
+
+  // useEffect(() => {
+  //   const deleteAllMachal = async () => {
+  //     try {
+  //       for (const machal of allMachals) {
+  //         console.log('Deleting machal:', machal);
+  //         await dispatch(deleteMachalThunk(machal.id)).unwrap();
+  //       }
+  //     } catch (error) {
+  //       console.error('Error while deleting machals:', error);
+  //     }
+  //   };
+
+  //   deleteAllMachal();
+  // }, [allMachals, dispatch]);
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>חותם</Text>
-        <Text style={styles.subHeaderText}>וחותם יד כל אדם בו</Text>
-        <Image
-          source={require('../../assets/fingerPrints.jpeg')}
-          style={styles.fingerprint}
-        />
+    <View style={globalStyles.container}>
+      <View style={globalStyles.sectionTransparent}>
+        <Logo />
       </View>
       <View style={styles.instructionsContainer}>
         <Text style={styles.sectionTitle}>הוראות בטיחות</Text>

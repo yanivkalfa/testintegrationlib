@@ -10,7 +10,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1" } // For MSAL dependencies
+        maven { url "https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1" }
     }
     dependencies {
         classpath("com.android.tools.build:gradle:8.0.0")
@@ -25,6 +25,13 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1" } // For MSAL dependencies
+        maven { url "https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1" } // ✅ MSAL dependencies
+    }
+
+    // ✅ Force Gradle to use json-smart:2.3 for MSAL compatibility
+    configurations.all {
+        resolutionStrategy {
+            force "net.minidev:json-smart:2.3"
+        }
     }
 }

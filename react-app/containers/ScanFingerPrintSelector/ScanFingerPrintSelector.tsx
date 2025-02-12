@@ -1,10 +1,16 @@
 import React from 'react';
 import {View, Text, TouchableOpacity, ScrollView} from 'react-native';
-import {styles} from './ScanFingerPrintSelector.styles';
-import globalStyles from '../../global.styles';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {Machal, RootStackParamList, SelectedFinger} from '../../config/types';
+import {
+  CommonActions,
+  NavigationProp,
+  useNavigation,
+} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
+
+import globalStyles from '../../global.styles';
+import {styles} from './ScanFingerPrintSelector.styles';
+
+import {Machal, RootStackParamList, SelectedFinger} from '../../config/types';
 import {RootState, selectMachal, selectMachalProp} from '../../store/store';
 import {
   FINGER_LABELS,
@@ -16,7 +22,7 @@ import {isFingersObjectEmpty} from '../../utils/general.utils';
 import {addMachal} from '../../store/machalsSlice';
 import {resetMachal} from '../../store/machalSlice';
 
-const ScanFingerPrintSelector = () => {
+const ScanFingerPrintSelector: React.FC = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const machalDetails = useSelector((state: RootState) => selectMachal(state));
@@ -35,6 +41,12 @@ const ScanFingerPrintSelector = () => {
     dispatch(addMachal(machalDetails as Machal));
     dispatch(resetMachal());
     navigation.navigate('Home');
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: 'Home'}],
+      }),
+    );
   };
 
   return (

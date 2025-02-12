@@ -1,9 +1,12 @@
 import React, {useEffect} from 'react';
 import {View, Text, TextInput} from 'react-native';
 import {useSelector} from 'react-redux';
-import {RootState, selectMachalProp} from '../../../../store/store';
+
 import {styles} from './MarkishDetails.styles';
+
+import {RootState, selectMachalProp} from '../../../../store/store';
 import {EventDetailsProps} from '../../Details.types';
+
 import {getAccounts} from '../../../../managers/AuthManager';
 
 const getUserTeudatZehut = (myIdfMailAdress: string) => {

@@ -1,11 +1,14 @@
 import React from 'react';
 import {Picker} from '@react-native-picker/picker';
-import {View, Text, TextInput} from 'react-native';
+import {View, Text} from 'react-native';
 import {useSelector} from 'react-redux';
+
+import {styles} from './HarkashaDetails.styles';
+
 import {RootState, selectMachalProp} from '../../../../store/store';
 import {OriginLocation} from '../../../../config/types';
-import {styles} from './HarkashaDetails.styles';
 import {EventDetailsProps} from '../../Details.types';
+
 import LocationInput from '../../../../components/LocationInput/LocationInput';
 import {CityName} from '../../../../components/LocationInput/LocationInput.types';
 

@@ -68,5 +68,6 @@ export const PRIMARY_EVENTS = 'primaryEvents';
 
 export const ANYTHING_BUT_NUMBERS_REGEX = new RegExp(/[^0-9]/g);
 export const HEBREW_NAME_REGEX = new RegExp(/[^\u0590-\u05FF\s-']/g);
-
+export const MEZAH_LITE_LONG_MACHAL_REGEX = new RegExp(/^(15|25|35)\d{8}$/);
 export const REQUEST_TIMEOUT = 20000;
+export const DEFAULT = 'default';

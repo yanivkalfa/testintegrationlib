@@ -7,8 +7,10 @@ import {
   NavigationProp,
 } from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
-import {styles} from './ScanFinger.styles';
+
 import globalStyles from '../../global.styles';
+import {styles} from './ScanFinger.styles';
+
 import {Fingerprint, RootStackParamList} from '../../config/types';
 import {FINGER_LABELS, NO_FINGER_ENUM} from '../../config/consts';
 import {
@@ -17,16 +19,19 @@ import {
   selectMachalProp,
 } from '../../store/store';
 import {addOrUpdateFingerPrintForNewMachal} from '../../store/machalSlice';
-import {saveFile} from '../../managers/FileManager';
 
-import Scanner from '../Scanner/Scanner';
+import {saveFile} from '../../managers/FileManager';
 import {
   beginCaptureImage,
   cancelCaptureImage,
 } from '../../managers/ScannerManager';
+
+import {testPrintBase64} from '../../assets/testPrintBase64';
+
+import Scanner from '../Scanner/Scanner';
 import NoFingerReasons from './components/NoFingerReasons/NoFingerReasons';
 
-const ScanFinger = () => {
+const ScanFinger: React.FC = () => {
   const [canScan, setCanScan] = useState<boolean>(true);
   const [scannedPrint, setScannedPrint] = useState<string>('');
   const [selectedReason, setSelectedReason] = useState<
@@ -48,7 +53,7 @@ const ScanFinger = () => {
 
   const onContinue = async () => {
     if (!canContinue) {
-      return false;
+      //return false;
     }
     if (!machalId) {
       console.error('Machal ID is missing!');
@@ -59,7 +64,7 @@ const ScanFinger = () => {
       let fingerPrint: Fingerprint = selectedReason;
       if (canScan) {
         const fileName = `${machalId}_${finger}.base64`;
-        await saveFile(fileName, scannedPrint);
+        await saveFile(fileName, testPrintBase64); //scannedPrint);
         fingerPrint = {
           storageFileName: fileName,
           height: 200,
@@ -153,14 +158,14 @@ const ScanFinger = () => {
           <TouchableOpacity
             style={[
               styles.continueButton,
-              !canContinue && globalStyles.disabled,
+              // !canContinue && globalStyles.disabled,
             ]}
-            disabled={!canContinue}
+            // disabled={!canContinue}
             onPress={() => onContinue()}>
             <Text
               style={[
                 globalStyles.actionButtonText,
-                !canContinue && globalStyles.disabled,
+                // !canContinue && globalStyles.disabled,
               ]}>
               המשך
             </Text>
