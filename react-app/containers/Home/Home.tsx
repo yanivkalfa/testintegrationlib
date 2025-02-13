@@ -1,11 +1,16 @@
 import React, {useEffect} from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity, ScrollView} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 
 import {styles} from './Home.styles';
 
-import {CaseType, RootStackParamList, SyncStatus} from '../../config/types';
+import {
+  CaseType,
+  Machal,
+  RootStackParamList,
+  SyncStatus,
+} from '../../config/types';
 
 import {createImagesFolder} from '../../managers/FileManager';
 import {
@@ -29,10 +34,12 @@ import {deleteMachalThunk, updateMachal} from '../../store/machalsSlice';
 import {useTheme} from '../../theme/hook/useTheme';
 
 import Logo from '../../assets/logo.svg';
+import Wounded from '../../assets/icons/wounded.svg';
+import Corpse from '../../assets/icons/harkashaDescription/corpse.svg';
+import {getRandomIDNumber} from '../../utils/math.utils';
 
-const App: React.FC = () => {
+const Home: React.FC = () => {
   const globalStyles = useTheme();
-
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const {isOnline, isLoggedIn, imgFolderCreated} = useSelector(
@@ -78,8 +85,14 @@ const App: React.FC = () => {
   }, []);
 
   const handlePress = (caseType: CaseType) => {
-    dispatch(updateCurrentMachal({caseType}));
-    navigation.navigate('Atzada');
+    const toUpdate: Partial<Machal> = {caseType};
+    let navigateTo: keyof RootStackParamList = 'Atzada';
+    if (caseType === CaseType.Wounded) {
+      toUpdate.id = getRandomIDNumber();
+      navigateTo = 'Details';
+    }
+    dispatch(updateCurrentMachal(toUpdate));
+    navigation.navigate(navigateTo);
   };
 
   useEffect(() => {
@@ -108,50 +121,64 @@ const App: React.FC = () => {
   // }, [allMachals, dispatch]);
 
   return (
-    <View style={globalStyles.container}>
-      <View style={globalStyles.sectionTransparent}>
-        <Logo />
+    <ScrollView style={globalStyles.containerScroll}>
+      <View style={[globalStyles.sectionTransparent, globalStyles.alignEnd]}>
+        <Logo width={'80%'} />
       </View>
-      <View style={styles.instructionsContainer}>
-        <Text style={styles.sectionTitle}>הוראות בטיחות</Text>
-        <View style={styles.instructions}>
-          <Text style={styles.instructionText}>
+
+      <View style={globalStyles.sectionSpacer} />
+      <View style={globalStyles.section}>
+        <View style={globalStyles.sectionHeader}>
+          <Text style={globalStyles.sectionHeaderText}>הוראות בטיחות</Text>
+        </View>
+        <View style={globalStyles.sectionBody}>
+          <Text style={globalStyles.sectionBodyText}>
             - יש לטפל בסיכונים ביטחוניים ובבטיחותיים
           </Text>
-          <Text style={styles.instructionText}>
+          <Text style={globalStyles.sectionBodyText}>
             {' '}
             הנמצאים בדירה ועל החלל, כגון אמל"ח ונשק
           </Text>
-          <Text style={styles.instructionText}>- יש ללבוש אפוד זיהוי רה"צ</Text>
-          <Text style={styles.instructionText}>
+          <Text style={globalStyles.sectionBodyText}>
+            - יש ללבוש אפוד זיהוי רה"צ
+          </Text>
+          <Text style={globalStyles.sectionBodyText}>
             - לפני הרשמת טביעת יד יש לנקות את אצבעות החלל
           </Text>
-          <Text style={styles.instructionText}>
+          <Text style={globalStyles.sectionBodyText}>
             - אין להעלות מידע סודי למערכת (כוחות מתמרנים, מצבי מבצע...)
           </Text>
         </View>
       </View>
 
-      <View style={styles.buttonsContainer}>
-        <Text style={styles.sectionTitle}>בחירת סוג מקרה</Text>
-        <View style={styles.buttons}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handlePress(CaseType.Machal)}>
-            <Text style={styles.buttonText}>חלל</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handlePress(CaseType.Wounded)}>
-            <Text style={styles.buttonText}>פצוע אלמוני</Text>
-          </TouchableOpacity>
+      <View style={globalStyles.sectionSpacer} />
+      <View style={globalStyles.sectionSpacer} />
+      <View style={globalStyles.section}>
+        <View style={globalStyles.sectionHeader}>
+          <Text style={globalStyles.sectionHeaderText}>בחירת סוג מקרה</Text>
+        </View>
+        <View style={globalStyles.sectionBody}>
+          <View style={globalStyles.rowSpace}>
+            <TouchableOpacity
+              style={[styles.button, globalStyles.marginRight]}
+              onPress={() => handlePress(CaseType.Machal)}>
+              <Corpse width={20} />
+              <Text style={styles.buttonText}>חלל</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, globalStyles.marginLeft]}
+              onPress={() => handlePress(CaseType.Wounded)}>
+              <Wounded width={20} />
+              <Text style={styles.buttonText}>פצוע אלמוני</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
-export default App;
+export default Home;
 
 // useEffect(() => {
 //   const deleteAllMachal = async () => {

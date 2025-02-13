@@ -2,93 +2,99 @@ import {StyleSheet} from 'react-native';
 import {palette} from './global.colors';
 import {ColorScheme} from './global.types';
 
-// const defaultColorScheme: ColorScheme = {
-//   navBar: {
-//     backgroundColor: '#',
-//     color: '#',
-//   },
-//   header: {
-//     backgroundColor: '#',
-//     color: '',
-//   },
-//   headerMachal: {
-//     backgroundColor: '#',
-//     color: '#',
-//   },
-//   headerWounded: {
-//     backgroundColor: '#',
-//     color: '#',
-//   },
-//   body: {
-//     backgroundColor: '#',
-//     color: '#',
-//   },
-//   bodyTitle: {
-//     color: '#',
-//   },
-//   section: {
-//     backgroundColor: '#',
-//     color: '#',
-//   },
-//   sectionTitle: {
-//     color: '#',
-//   },
-//   sectionBody: {
-//     backgroundColor: '#',
-//     color: '#',
-//   },
-//   sectionBodyTitle: {
-//     color: '#',
-//   },
-//   buttonApprove: {
-//     backgroundColor: '#',
-//     borderColor: '#',
-//   },
-//   buttonApproveText: {
-//     color: '#',
-//   },
-//   buttonCancel: {
-//     backgroundColor: '#',
-//     borderColor: '#',
-//   },
-//   buttonCancelText: {
-//     color: '#',
-//   },
-// };
 const abstractStyles = {
+  marginRight: {
+    marginRight: 10,
+  },
+  marginLeft: {
+    marginLeft: 10,
+  },
   sectionPadding: {
     padding: 12,
   },
   sectionMargin: {
-    marginTop: 8,
+    marginTop: 10,
+  },
+  fieldMargin: {
+    marginBottom: 15,
   },
   alignCenter: {
     alignItems: 'center' as 'center',
   },
+  alignEnd: {
+    alignItems: 'flex-end',
+  },
   titleBase: {
     fontSize: 18,
-    ffontWeight: 'bold',
+    fontWeight: 'bold',
   },
 };
 
 const getGlobalStyles = (colorScheme: ColorScheme) => {
   const baseEmptySection = {
-    ...abstractStyles.sectionPadding,
     ...abstractStyles.sectionMargin,
   };
 
   const baseSection = {
     ...baseEmptySection,
     backgroundColor: colorScheme.section?.backgroundColor,
-    borderBottomWidth: 1,
-    borderBottomColor: colorScheme.section?.borderBottomColor,
   };
 
   const baseContainer = {
     flex: 1,
-    backgroundColor: colorScheme.body?.backgroundColor,
+    padding: 12,
+    backgroundColor: colorScheme.container?.backgroundColor,
   };
+
+  const baseButton = {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    borderWidth: 1,
+    ...abstractStyles.sectionPadding,
+  };
+
+  const baseInput = {
+    padding: 12,
+    textAlign: 'right',
+    writingDirection: 'rtl',
+  };
+
   return StyleSheet.create({
+    sectionSpacer: {
+      marginTop: 30,
+    },
+    sectionSpacer20: {
+      marginTop: 20,
+    },
+    horizontalDivider: {
+      ...colorScheme.horizontalDivider,
+      borderBottomWidth: 1,
+      marginVertical: 10,
+      width: '100%',
+    },
+    verticalDividier: {
+      ...colorScheme.verticalDividier,
+      borderLeftWidth: 1,
+      marginHorizontal: 10,
+      height: '100%',
+    },
+    row: {
+      flexDirection: 'row',
+    },
+    rowSpace: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    rowEnd: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+    },
+    logo: {
+      width: '70%',
+      height: 50,
+    },
     navbar: {
       padding: 5,
       ...colorScheme.navBar,
@@ -100,15 +106,56 @@ const getGlobalStyles = (colorScheme: ColorScheme) => {
     containerScroll: {
       ...baseContainer,
     },
+    containerTitle: {
+      ...colorScheme.containerTitle,
+    },
+    containerTitleText: {
+      ...colorScheme.containerTitleText,
+    },
     sectionTransparent: {
       ...baseEmptySection,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
     },
     section: {
       ...baseSection,
-      ...abstractStyles.alignCenter,
+    },
+    sectionHeader: {
+      ...abstractStyles.sectionPadding,
+      ...colorScheme.sectionHeader,
+    },
+    sectionHeaderText: {
+      ...abstractStyles.titleBase,
+      ...colorScheme.sectionHeaderText,
+    },
+    sectionBody: {
+      ...abstractStyles.sectionPadding,
+      ...colorScheme.sectionBody,
+    },
+    sectionBodyText: {
+      fontSize: 16,
+      ...colorScheme.sectionBodyText,
+    },
+    sectionBodyTitle: {
+      ...colorScheme.sectionBodyTitle,
+    },
+    sectionBodyTitleText: {
+      ...abstractStyles.titleBase,
+      color: colorScheme.sectionBodyTitleText?.color,
+    },
+    sectionHeaderMachal: {
+      ...abstractStyles.sectionPadding,
+      ...colorScheme.sectionHeaderMachal,
+    },
+    sectionHeaderMachalText: {
+      ...abstractStyles.titleBase,
+      ...colorScheme.sectionHeaderMachalText,
+    },
+    sectionHeaderWounded: {
+      ...abstractStyles.sectionPadding,
+      ...colorScheme.sectionHeaderWounded,
+    },
+    sectionHeaderWoundedText: {
+      ...abstractStyles.titleBase,
+      ...colorScheme.sectionHeaderWoundedText,
     },
     sectionMain: {
       ...baseSection,
@@ -116,6 +163,37 @@ const getGlobalStyles = (colorScheme: ColorScheme) => {
       justifyContent: 'center',
       alignItems: 'center',
     },
+    primaryButton: {
+      ...baseButton,
+      ...colorScheme.primaryButton,
+    },
+    primaryButtonText: {
+      ...colorScheme.primaryButtonText,
+      fontWeight: 'bold',
+    },
+    secondaryButton: {
+      ...baseButton,
+      ...colorScheme.secondaryButton,
+    },
+    secondaryButtonText: {
+      ...colorScheme.secondaryButtonText,
+      fontWeight: 'bold',
+    },
+    buttonDisabled: {
+      ...colorScheme.buttonDisabled,
+    },
+    buttonDisabledText: {
+      ...colorScheme.buttonDisabledText,
+    },
+    inputGray: {
+      ...baseInput,
+      ...colorScheme.inputGray,
+    },
+    inputWhite: {
+      ...baseInput,
+      ...colorScheme.inputWhite,
+    },
+
     sectionFullHeight: {
       ...baseSection,
       flexGrow: 1,
@@ -127,22 +205,6 @@ const getGlobalStyles = (colorScheme: ColorScheme) => {
     sectionWithHeader: {
       ...baseSection,
       justifyContent: 'flex-start',
-    },
-    sectionHeader: {
-      ...abstractStyles.titleBase,
-      ...colorScheme.sectionHeader,
-    },
-    sectionHeaderMachal: {
-      ...abstractStyles.titleBase,
-      ...colorScheme.sectionHeaderMachal,
-    },
-    sectionHeaderWounded: {
-      ...abstractStyles.titleBase,
-      ...colorScheme.sectionHeaderWounded,
-    },
-    sectionBodyTitle: {
-      ...abstractStyles.titleBase,
-      color: colorScheme.sectionBodyTitle?.color,
     },
     sectionSubTitle: {
       fontSize: 16,
@@ -206,7 +268,19 @@ const getGlobalStyles = (colorScheme: ColorScheme) => {
       borderColor: '#7a7a7a',
       color: '#b5b5b5',
     },
+    ...abstractStyles,
   });
 };
 
 export default getGlobalStyles;
+
+// width: '100%',
+//     backgroundColor: '#ffffff',
+//     borderRadius: 10,
+//     padding: 15,
+//     marginBottom: 20,
+//     shadowColor: '#000',
+//     shadowOffset: {width: 0, height: 2},
+//     shadowOpacity: 0.1,
+//     shadowRadius: 4,
+//     elevation: 3,

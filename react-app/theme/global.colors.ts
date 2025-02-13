@@ -13,8 +13,11 @@ export const palette = {
   warning: {
     main: 'rgba(253, 205, 35, 1)',
   },
+  textBlack: {
+    main: 'rgb(15, 15, 15)',
+  },
   text: {
-    primary: 'rgba(59, 59, 77, 1)',
+    primary: 'rgba(21, 101, 255, 1)',
     secondary: 'rgba(77, 79, 140, 1)',
     disabled: 'rgba(137, 137, 148, 1)',
   },
@@ -24,7 +27,8 @@ export const palette = {
   },
   grey: {
     '100': 'rgba(249, 250, 252, 1)',
-    '200': 'rgba(245, 247, 253, 1)',
+    '150': 'rgb(245, 245, 245)',
+    '200': 'rgb(237, 237, 237)',
     '300': 'rgba(235, 238, 244, 1)',
     '400': 'rgba(194, 204, 223, 1)',
     '500': 'rgba(137, 137, 148, 1)',
@@ -38,56 +42,82 @@ export const palette = {
 
 const defaultColorScheme: ColorScheme = {
   navBar: {
-    backgroundColor: '#',
-    color: '#',
+    backgroundColor: palette.grey[300],
+    color: palette.textBlack.main,
   },
-  body: {
-    backgroundColor: '#f5f5fa',
-    color: '#',
+  container: {
+    backgroundColor: '#eef0fc',
+    color: palette.textBlack.main,
   },
-  bodyTitle: {
-    color: '#',
+  containerTitle: {},
+  containerTitleText: {
+    color: palette.textBlack.main,
   },
   section: {
-    backgroundColor: '#',
-    color: '#',
-    borderBottomColor: '#ddd',
-  },
-  sectionTitle: {
-    color: '#',
-  },
-  sectionBody: {
-    backgroundColor: '#',
-    color: '#',
-  },
-  sectionBodyTitle: {
-    color: '#',
+    backgroundColor: palette.background.paper,
   },
   sectionHeader: {
-    backgroundColor: '#',
-    color: '',
+    backgroundColor: palette.grey[400],
+  },
+  sectionHeaderText: {
+    color: palette.text.primary,
+  },
+  sectionBody: {},
+  sectionBodyText: {
+    color: palette.textBlack.main,
+  },
+  sectionBodyTitle: {
+    color: palette.text.primary,
+  },
+  sectionBodyTitleText: {
+    color: palette.text.primary,
   },
   sectionHeaderMachal: {
-    backgroundColor: '#',
-    color: '#',
+    backgroundColor: palette.grey[200],
+  },
+  sectionHeaderMachalText: {
+    color: palette.text.primary,
   },
   sectionHeaderWounded: {
-    backgroundColor: '#',
-    color: '#',
+    backgroundColor: palette.preprodBackground.default,
   },
-  buttonApprove: {
-    backgroundColor: '#',
-    borderColor: '#',
+  sectionHeaderWoundedText: {
+    color: palette.textBlack.main,
   },
-  buttonApproveText: {
-    color: '#',
+  primaryButton: {
+    backgroundColor: palette.primary.main,
+    borderColor: palette.primary.main,
   },
-  buttonCancel: {
-    backgroundColor: '#',
-    borderColor: '#',
+  primaryButtonText: {
+    color: palette.background.paper,
   },
-  buttonCancelText: {
-    color: '#',
+  secondaryButton: {
+    backgroundColor: '#eef0fc',
+    borderColor: palette.grey[300],
+  },
+  secondaryButtonText: {
+    color: palette.grey[300],
+  },
+  buttonDisabled: {
+    backgroundColor: palette.grey[500],
+    borderColor: palette.grey[500],
+  },
+  buttonDisabledText: {
+    color: palette.background.paper,
+  },
+  horizontalDivider: {
+    borderBottomColor: palette.grey[400],
+  },
+  verticalDividier: {
+    borderLeftColor: palette.grey[400],
+  },
+  inputGray: {
+    backgroundColor: palette.grey[150],
+    borderColor: palette.grey[400],
+  },
+  inputWhite: {
+    backgroundColor: palette.background.paper,
+    borderColor: palette.grey[700],
   },
 };
 

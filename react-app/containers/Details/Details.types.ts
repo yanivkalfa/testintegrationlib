@@ -1,4 +1,3 @@
-import {CityDetails} from '../../components/LocationInput/LocationInput.types';
 import {Machal} from '../../config/types';
 
 export type UpdateMachalProp = <K extends keyof Machal>(

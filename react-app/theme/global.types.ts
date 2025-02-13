@@ -1,23 +1,27 @@
-export type ColorConfig = {
-  backgroundColor?: string;
-  color?: string;
-  borderColor?: string;
-  borderBottomColor?: string;
-};
-
 export type ColorScheme = {
-  navBar?: ColorConfig;
-  body?: ColorConfig;
-  bodyTitle?: {color?: string};
-  section?: ColorConfig;
-  sectionTitle?: {color?: string};
-  sectionBody?: ColorConfig;
-  sectionBodyTitle?: {color?: string};
-  sectionHeader?: ColorConfig;
-  sectionHeaderMachal?: ColorConfig;
-  sectionHeaderWounded?: ColorConfig;
-  buttonApprove?: ColorConfig;
-  buttonApproveText?: {color?: string};
-  buttonCancel?: ColorConfig;
-  buttonCancelText?: {color?: string};
+  navBar?: any;
+  container?: any;
+  containerTitle?: any;
+  containerTitleText?: any;
+  section?: any;
+  sectionHeader?: any;
+  sectionHeaderText?: any;
+  sectionBody?: any;
+  sectionBodyText?: any;
+  sectionBodyTitle?: any;
+  sectionBodyTitleText?: any;
+  sectionHeaderMachal?: any;
+  sectionHeaderMachalText?: any;
+  sectionHeaderWounded?: any;
+  sectionHeaderWoundedText?: any;
+  primaryButton?: any;
+  primaryButtonText?: any;
+  secondaryButton?: any;
+  secondaryButtonText?: any;
+  buttonDisabled?: any;
+  buttonDisabledText?: any;
+  horizontalDivider?: any;
+  verticalDividier?: any;
+  inputGray: any;
+  inputWhite: any;
 };

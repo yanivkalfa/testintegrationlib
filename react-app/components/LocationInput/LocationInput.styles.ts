@@ -4,11 +4,8 @@ export const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 10,
-    backgroundColor: '#f9f9f9',
+    justifyContent: 'space-between',
+    padding: 5,
   },
   input: {
     flex: 1,

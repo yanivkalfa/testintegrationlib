@@ -16,8 +16,10 @@ import {updateCurrentMachal} from '../../store/machalSlice';
 import {RootStackParamList} from '../../config/types';
 import {getRandomIDNumber} from '../../utils/math.utils';
 import {RootState, selectMachalProp} from '../../store/store';
+import {useTheme} from '../../theme/hook/useTheme';
 
 const Atzada: React.FC = () => {
+  const globalStyles = useTheme();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useDispatch();
   const machalCaseType = useSelector((state: RootState) =>
@@ -27,7 +29,7 @@ const Atzada: React.FC = () => {
     selectMachalProp(state, 'id'),
   );
 
-  const [fnishedScanning, setFnishedScanning] = useState<boolean>(false);
+  const [finishedScanning, setFinishedScanning] = useState<boolean>(false);
   const [scannedCode, setScannedCode] = useState<string | null>(machalId);
   const device = useCameraDevice('back');
   const {hasPermission, requestPermission} = useCameraPermission();
@@ -80,7 +82,7 @@ const Atzada: React.FC = () => {
         codesScanned.current = 0;
         const mostFrequentCode = findMostFrequentCode(codeFrequencies.current);
         setScannedCode(mostFrequentCode);
-        setFnishedScanning(true);
+        setFinishedScanning(true);
         codeFrequencies.current = {};
       }
     },
@@ -102,38 +104,52 @@ const Atzada: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.instructionsTitle}>סריקת מח"ל</Text>
-        <Text style={styles.instructionsText}>
-          יש לסרוק את הברקוד שעל אצודת המח"ל
-        </Text>
+    <View style={globalStyles.container}>
+      <View style={globalStyles.section}>
+        <View style={globalStyles.sectionHeader}>
+          <Text
+            style={[globalStyles.sectionHeaderText, styles.sectionTitleText]}>
+            סריקת מח"ל
+          </Text>
+        </View>
+        <View style={globalStyles.sectionBody}>
+          <Text style={globalStyles.sectionBodyText}>
+            יש לסרוק את הברקוד שעל אצודת המח"ל
+          </Text>
+        </View>
       </View>
 
       <Camera
-        style={styles.qrScanner}
+        style={globalStyles.sectionMain}
         device={device}
-        isActive={!fnishedScanning}
+        isActive={!finishedScanning}
         codeScanner={codeScanner}
       />
 
-      <View style={styles.footer}>
-        <TextInput
-          placeholder="הזן מספר מח''ל"
-          style={styles.input}
-          value={scannedCode || ''}
-          onChangeText={text => onMachalIdChange(text)}
-        />
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.secondaryButton} onPress={onNoId}>
-            <Text style={styles.secondaryButtonText}>אין לי אצודה</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.primaryButton}
-            disabled={!scannedCode}
-            onPress={onContinue}>
-            <Text style={styles.primaryButtonText}>המשך</Text>
-          </TouchableOpacity>
+      <View style={globalStyles.section}>
+        <View style={globalStyles.sectionHeader}>
+          <Text style={globalStyles.sectionHeaderText}>מספר מח''ל</Text>
+        </View>
+        <View style={globalStyles.sectionBody}>
+          <TextInput
+            placeholder="הזן מספר מח''ל"
+            style={styles.input}
+            value={scannedCode || ''}
+            onChangeText={text => onMachalIdChange(text)}
+          />
+          <View style={globalStyles.rowSpace}>
+            <TouchableOpacity
+              style={[globalStyles.primaryButton, globalStyles.marginRight]}
+              disabled={!scannedCode}
+              onPress={onContinue}>
+              <Text style={globalStyles.primaryButtonText}>המשך</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[globalStyles.primaryButton, globalStyles.marginLeft]}
+              onPress={onNoId}>
+              <Text style={globalStyles.primaryButtonText}>אין לי אצודה</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>

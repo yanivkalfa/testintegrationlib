@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Picker} from '@react-native-picker/picker';
-import {View, Text, TextInput, ActivityIndicator} from 'react-native';
+import {View, TextInput, ActivityIndicator} from 'react-native';
 import {useSelector} from 'react-redux';
-
-import {styles} from './EventDetails.styles';
 
 import {RootState, selectMachalProp} from '../../../../store/store';
 import {PrimaryEvent, Selector} from '../../../../config/types';
@@ -12,6 +10,7 @@ import {EventDetailsProps} from '../../Details.types';
 import {PRIMARY_EVENTS} from '../../../../config/consts';
 
 import {vault} from '../../../../managers/StorageManager';
+import {useTheme} from '../../../../theme/hook/useTheme';
 
 const defaultPrimaryEvents = Object.values(PrimaryEvent).map(
   (option, index) => ({
@@ -21,6 +20,7 @@ const defaultPrimaryEvents = Object.values(PrimaryEvent).map(
 ) as Selector[];
 
 const EventDetails: React.FC<EventDetailsProps> = ({updateMachalProp}) => {
+  const globalStyles = useTheme();
   const [primaryEvents, setPrimaryEvents] =
     useState<Selector[]>(defaultPrimaryEvents);
   const [loading, setLoading] = useState<boolean>(true);
@@ -54,11 +54,9 @@ const EventDetails: React.FC<EventDetailsProps> = ({updateMachalProp}) => {
 
   return (
     <>
-      {loading && <ActivityIndicator size="large" color="#0000ff" />}
-
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>שייך אירוע ראשי *</Text>
+      <View style={globalStyles.fieldMargin}>
         <Picker
+          style={globalStyles.inputGray}
           selectedValue={machalPrimaryEvent?.id}
           onValueChange={(itemValue: number) => {
             const selectedEvent = primaryEvents.find(
@@ -67,19 +65,18 @@ const EventDetails: React.FC<EventDetailsProps> = ({updateMachalProp}) => {
             if (selectedEvent) {
               updateMachalProp('primaryEvent', selectedEvent);
             }
-          }}
-          style={styles.picker}>
-          <Picker.Item label="בחר" value={undefined} />
+          }}>
+          <Picker.Item label="שייך אירוע ראשי *" value={undefined} />
           {primaryEvents.map(event => (
             <Picker.Item key={event.id} label={event.name} value={event.id} />
           ))}
         </Picker>
+        {loading && <ActivityIndicator size="large" color="#0000ff" />}
       </View>
 
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>שייך אירוע משני</Text>
+      <View style={globalStyles.fieldMargin}>
         <TextInput
-          style={styles.input}
+          style={globalStyles.inputGray}
           value={machalSecondaryEvent}
           onChangeText={text => updateMachalProp('secondaryEvent', text)}
           placeholder="שייך אירוע משני *"

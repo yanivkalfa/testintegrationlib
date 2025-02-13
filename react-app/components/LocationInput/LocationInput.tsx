@@ -21,6 +21,7 @@ import {
 } from './LocationInput.types';
 
 import LocationIcon from './components/LocationIcon/LocationIcon';
+import {useTheme} from '../../theme/hook/useTheme';
 
 const Errors = {
   [ErrorTypes.POSITION]: 'Unable to fetch location',
@@ -29,6 +30,7 @@ const Errors = {
 };
 
 const LocationInput: React.FC<LocationInputProps> = ({onChange, value}) => {
+  const globalStyles = useTheme();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,25 +61,27 @@ const LocationInput: React.FC<LocationInputProps> = ({onChange, value}) => {
 
   return (
     <View>
-      <View style={styles.container}>
+      <View style={[globalStyles.inputGray, styles.container]}>
+        <View style={[globalStyles.row]}>
+          <TouchableOpacity
+            onPress={getCurrentLocation}
+            style={styles.iconContainer}>
+            <LocationIcon color={error ? 'red' : undefined} />
+          </TouchableOpacity>
+          {loading && (
+            <ActivityIndicator
+              style={styles.spinner}
+              size="small"
+              color="#1565FF"
+            />
+          )}
+        </View>
         <TextInput
-          style={styles.input}
+          style={globalStyles.inputGray}
           value={value}
           placeholder={'מיקום הרשאה *'}
           onChangeText={text => handleChange(text)}
         />
-        {loading && (
-          <ActivityIndicator
-            style={styles.spinner}
-            size="small"
-            color="#1565FF"
-          />
-        )}
-        <TouchableOpacity
-          onPress={getCurrentLocation}
-          style={styles.iconContainer}>
-          <LocationIcon color={error ? 'red' : undefined} />
-        </TouchableOpacity>
       </View>
       {error && <Text style={styles.error}>{error}</Text>}
     </View>

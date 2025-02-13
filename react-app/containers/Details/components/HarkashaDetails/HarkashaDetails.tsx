@@ -11,8 +11,11 @@ import {EventDetailsProps} from '../../Details.types';
 
 import LocationInput from '../../../../components/LocationInput/LocationInput';
 import {CityName} from '../../../../components/LocationInput/LocationInput.types';
+import globalStyles from '../../../../global.styles';
+import {useTheme} from '../../../../theme/hook/useTheme';
 
 const HarkashaDetails: React.FC<EventDetailsProps> = ({updateMachalProp}) => {
+  const globalStyles = useTheme();
   const machalOriginLocation = useSelector((state: RootState) =>
     selectMachalProp(state, 'originLocation'),
   ) as OriginLocation | undefined;
@@ -25,37 +28,40 @@ const HarkashaDetails: React.FC<EventDetailsProps> = ({updateMachalProp}) => {
     selectMachalProp(state, 'harkashaTime'),
   ) as string | undefined;
 
+  const machalCaseType = useSelector((state: RootState) =>
+    selectMachalProp(state, 'caseType'),
+  );
+
   const onLocationChanged = (cityName: CityName) => {
     updateMachalProp('harkashaLocation', cityName || '');
   };
 
   return (
     <>
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>נלקח ב</Text>
+      <View style={globalStyles.fieldMargin}>
         <Picker
+          style={globalStyles.inputGray}
           selectedValue={machalOriginLocation}
           onValueChange={(itemValue: OriginLocation) => {
             updateMachalProp('originLocation', itemValue);
-          }}
-          style={styles.picker}>
-          <Picker.Item label="בחר" value={undefined} />
+          }}>
+          <Picker.Item label="נלקח ב" value={undefined} />
           {Object.values(OriginLocation).map(location => (
             <Picker.Item key={location} label={location} value={location} />
           ))}
         </Picker>
       </View>
 
-      <View style={styles.fieldContainer}>
+      <View style={globalStyles.fieldMargin}>
         <LocationInput
           onChange={onLocationChanged}
           value={machalHarkashaLocation}
         />
       </View>
-
-      <Text style={styles.fieldContainer}>
-        תאריך הרשאה: {machalHarkashaTime}
-      </Text>
+      <View style={globalStyles.alignEnd}>
+        <Text style={styles.harkashaTimeTitle}>מועד הרכשה:</Text>
+        <Text style={styles.harkashaTimeValue}>{machalHarkashaTime}</Text>
+      </View>
     </>
   );
 };
