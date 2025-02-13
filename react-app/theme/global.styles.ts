@@ -19,14 +19,14 @@ const abstractStyles = {
     marginBottom: 15,
   },
   alignCenter: {
-    alignItems: 'center' as 'center',
+    alignItems: 'center' as const,
   },
   alignEnd: {
-    alignItems: 'flex-end',
+    alignItems: 'flex-end' as const,
   },
   titleBase: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
   },
 };
 
@@ -194,80 +194,80 @@ const getGlobalStyles = (colorScheme: ColorScheme) => {
       ...colorScheme.inputWhite,
     },
 
-    sectionFullHeight: {
-      ...baseSection,
-      flexGrow: 1,
-    },
-    sectionHorizontal: {
-      ...baseSection,
-      flexDirection: 'row',
-    },
-    sectionWithHeader: {
-      ...baseSection,
-      justifyContent: 'flex-start',
-    },
-    sectionSubTitle: {
-      fontSize: 16,
-      color: '#555',
-    },
-    actionButton: {
-      flex: 1,
-      marginHorizontal: 8,
-      padding: 12,
-      backgroundColor: '#007BFF',
-      borderRadius: 8,
-      borderWidth: 1,
-      borderColor: '#007BFF',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    actionButtonSelected: {
-      backgroundColor: '#E3F2FD',
-      borderColor: '#64B5F6',
-    },
-    actionButtonText: {
-      color: '#fff',
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-    abortButton: {
-      flex: 1,
-      marginRight: 8,
-      padding: 12,
-      backgroundColor: '#fff',
-      borderWidth: 1,
-      borderColor: '#007BFF',
-      borderRadius: 8,
-      alignItems: 'center',
-    },
-    abortButtonText: {
-      fontSize: 16,
-      color: '#007BFF',
-      fontWeight: 'bold',
-    },
-    abortButton_12: {
-      flex: 1,
-      marginRight: 8,
-      padding: 3,
-      backgroundColor: '#fff',
-      borderWidth: 1,
-      borderColor: '#007BFF',
-      borderRadius: 8,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    textSize_12: {
-      fontSize: 12,
-      color: '#007BFF',
-    },
-    spacer: {
-      marginTop: 8,
-    },
-    disabled: {
-      backgroundColor: '#7a7a7a',
-      borderColor: '#7a7a7a',
-      color: '#b5b5b5',
-    },
+    // sectionFullHeight: {
+    //   ...baseSection,
+    //   flexGrow: 1,
+    // },
+    // sectionHorizontal: {
+    //   ...baseSection,
+    //   flexDirection: 'row',
+    // },
+    // sectionWithHeader: {
+    //   ...baseSection,
+    //   justifyContent: 'flex-start',
+    // },
+    // sectionSubTitle: {
+    //   fontSize: 16,
+    //   color: '#555',
+    // },
+    // actionButton: {
+    //   flex: 1,
+    //   marginHorizontal: 8,
+    //   padding: 12,
+    //   backgroundColor: '#007BFF',
+    //   borderRadius: 8,
+    //   borderWidth: 1,
+    //   borderColor: '#007BFF',
+    //   alignItems: 'center',
+    //   justifyContent: 'center',
+    // },
+    // actionButtonSelected: {
+    //   backgroundColor: '#E3F2FD',
+    //   borderColor: '#64B5F6',
+    // },
+    // actionButtonText: {
+    //   color: '#fff',
+    //   fontSize: 16,
+    //   fontWeight: 'bold',
+    // },
+    // abortButton: {
+    //   flex: 1,
+    //   marginRight: 8,
+    //   padding: 12,
+    //   backgroundColor: '#fff',
+    //   borderWidth: 1,
+    //   borderColor: '#007BFF',
+    //   borderRadius: 8,
+    //   alignItems: 'center',
+    // },
+    // abortButtonText: {
+    //   fontSize: 16,
+    //   color: '#007BFF',
+    //   fontWeight: 'bold',
+    // },
+    // abortButton_12: {
+    //   flex: 1,
+    //   marginRight: 8,
+    //   padding: 3,
+    //   backgroundColor: '#fff',
+    //   borderWidth: 1,
+    //   borderColor: '#007BFF',
+    //   borderRadius: 8,
+    //   alignItems: 'center',
+    //   justifyContent: 'center',
+    // },
+    // textSize_12: {
+    //   fontSize: 12,
+    //   color: '#007BFF',
+    // },
+    // spacer: {
+    //   marginTop: 8,
+    // },
+    // disabled: {
+    //   backgroundColor: '#7a7a7a',
+    //   borderColor: '#7a7a7a',
+    //   color: '#b5b5b5',
+    // },
     ...abstractStyles,
   });
 };
