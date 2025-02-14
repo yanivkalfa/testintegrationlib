@@ -19,7 +19,7 @@ import {
   login,
   updateIsLoggedIn,
 } from '../../managers/AuthManager';
-import {checkSyncStatus} from '../../managers/SyncMachalsManager';
+import {checkSyncStatus} from '../../managers/SyncingManager';
 import {checkConnectedDevicesPermissions} from '../../managers/ScannerManager';
 
 import {
@@ -36,6 +36,10 @@ import {useTheme} from '../../theme/hook/useTheme';
 import Logo from '../../assets/logo.svg';
 import {getRandomIDNumber} from '../../utils/math.utils';
 import SvgIcon from '../../components/SvgIcon/SvgIcon';
+import {
+  checkAndDeleteUnusedPrints,
+  deleteOldMachalsAndUnusedPrints,
+} from '../../managers/GarbageManager';
 
 const Home: React.FC = () => {
   const globalStyles = useTheme();
@@ -80,6 +84,7 @@ const Home: React.FC = () => {
     };
 
     checkConnectedDevicesPermissions();
+    deleteOldMachalsAndUnusedPrints(); // NEEDS FARTHER TESTING
     authenticate();
   }, []);
 

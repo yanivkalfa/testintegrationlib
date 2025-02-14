@@ -15,7 +15,7 @@ import ScanFingerPrintSelector from './containers/ScanFingerPrintSelector/ScanFi
 import ScanFinger from './containers/ScanFinger/ScanFinger';
 
 import './managers/ScannerManager';
-import './managers/SyncMachalsManager';
+import './managers/SyncingManager';
 import './managers/NetworkManager';
 import './managers/AuthManager';
 import './Logger';

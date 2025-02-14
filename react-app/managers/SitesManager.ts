@@ -8,9 +8,10 @@ export const setHeaders = async (req: InternalAxiosRequestConfig<any>) => {
 };
 
 export const getCurrSiteId = async () => {
-  return ((await vault.get(SITES_ID_STORAGE_KEY)) || {}).siteId;
+  const siteObject = await vault.get(SITES_ID_STORAGE_KEY);
+  return siteObject?.[SITES_ID_STORAGE_KEY];
 };
 
 export const setSiteId = async (siteId: string) => {
-  vault.set(SITES_ID_STORAGE_KEY, {siteId});
+  vault.set(SITES_ID_STORAGE_KEY, {[SITES_ID_STORAGE_KEY]: siteId});
 };

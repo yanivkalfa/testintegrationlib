@@ -42,6 +42,9 @@ export const selectMachal = (state: RootState) => state.machal;
 export const selectUnsyncedMachals = createSelector([selectMachals], machals =>
   machals.filter(machal => machal.syncStatus === SyncStatus.NEED_SYNC),
 );
+export const selectSyncedMachals = createSelector([selectMachals], machals =>
+  machals.filter(machal => machal.syncStatus === SyncStatus.SYNCED),
+);
 export const selectMachalsById = createSelector(
   [selectMachals, selectMachalId],
   (machals, id) => machals.find((machal: Machal) => machal.id === id),

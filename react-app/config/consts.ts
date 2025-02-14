@@ -5,11 +5,14 @@ export const HEADER_KEYS = {
 export const API_BASE_URL =
   'https://hotam.dev.digital.idf.il/api/field/development';
 export const LOCATION_API = '4b0f1b6fee24371fc7f9f7ce8c48e72a';
-export const SITES_ID_STORAGE_KEY = 'mySite';
+export const SITES_ID_STORAGE_KEY = 'siteId';
+export const GARBAGE_LAST_CHECK_KEY = 'garbageLastCheck';
 export const MSAL_SCOPE = 'api://tik-chalal-dev/all';
 export const LOGIN_NOTIFICATION_ID = 'login-required';
 export const SYNC_SUCCESS_NOTIFICATION_ID = 'sync-success';
 export const SYNC_FAILED_NOTIFICATION_ID = 'sync-failed';
+
+export const ONE_DAY = 24 * 60 * 60 * 1000;
 
 export const NO_FINGER_ENUM = {
   NO_FINGER: 'NO_FINGER',
