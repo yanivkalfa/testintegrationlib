@@ -267,33 +267,30 @@ public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
         return;
       }
 
-//      int captureOptions = 0;
-//      captureOptions |= IBScanDevice.OPTION_AUTO_CONTRAST;
-//      captureOptions |= IBScanDevice.OPTION_AUTO_CAPTURE;
-//      captureOptions |= IBScanDevice.OPTION_IGNORE_FINGER_COUNT;
-//
-//      mIBScanDevice.setProperty(IBScanDevice.PropertyId.ENABLE_SPOOF, "FALSE");
-//      mIBScanDevice.setProperty(IBScanDevice.PropertyId.DISABLE_SEGMENT_ROTATION, "TRUE");
-//      mIBScanDevice.setProperty(IBScanDevice.PropertyId.SPOOF_LEVEL, "5");
-//      mIBScanDevice.setProperty(IBScanDevice.PropertyId.RESERVED_IMAGE_PROCESS_THRESHOLD, "2");
-//      mIBScanDevice.setProperty(IBScanDevice.PropertyId.RESERVED_ENHANCED_RESULT_IMAGE_LEVEL, "5");
-//
+      mIBScanDevice.setProperty(IBScanDevice.PropertyId.ENABLE_SPOOF, "FALSE");
+      mIBScanDevice.setProperty(IBScanDevice.PropertyId.DISABLE_SEGMENT_ROTATION, "TRUE");
+      mIBScanDevice.setProperty(IBScanDevice.PropertyId.SPOOF_LEVEL, "5");
+      mIBScanDevice.setProperty(IBScanDevice.PropertyId.RESERVED_IMAGE_PROCESS_THRESHOLD, "2");
+      mIBScanDevice.setProperty(IBScanDevice.PropertyId.RESERVED_ENHANCED_RESULT_IMAGE_LEVEL, "5");
+
       // Set decimation to reduce image size or quality
       // mIBScanDevice.setProperty(IBScanDevice.PropertyId.ENABLE_DECIMATION, "TRUE");
 
       // Set a smaller capture area threshold
-      mIBScanDevice.setProperty(IBScanDevice.PropertyId.CAPTURE_AREA_THRESHOLD, "12");
+      //mIBScanDevice.setProperty(IBScanDevice.PropertyId.CAPTURE_AREA_THRESHOLD, "12");
 
       // Lower image processing threshold for faster processing
       // mIBScanDevice.setProperty(IBScanDevice.PropertyId.RESERVED_IMAGE_PROCESS_THRESHOLD,
       // "1");
 
-      // Adjust contrast level
-      mIBScanDevice.setContrast(1); // 50 is a mid-level contrast, can adjust 0-100
+      int captureOptions = 0;
+      captureOptions |= IBScanDevice.OPTION_AUTO_CONTRAST;
+      captureOptions |= IBScanDevice.OPTION_AUTO_CAPTURE;
+      captureOptions |= IBScanDevice.OPTION_IGNORE_FINGER_COUNT;
       mIBScanDevice.beginCaptureImage(
           ImageType.FLAT_SINGLE_FINGER,
           IBScanDevice.ImageResolution.RESOLUTION_500,
-          IBScanDevice.OPTION_AUTO_CAPTURE);
+              captureOptions);
       Emitter.log("NO ERROR - Capture started.");
       if (events != null) {
         events.onCaptureStarted();
