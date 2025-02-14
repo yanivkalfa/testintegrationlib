@@ -39,7 +39,7 @@ const linking: LinkingOptions<RootStackParamList> = {
 
 const TesterChoice: React.FC = () => {
   const currentMachal = useSelector(selectMachal);
-  console.log('currentMachal', currentMachal);
+  //console.log('currentMachal', currentMachal);
   return <></>;
 };
 

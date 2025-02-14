@@ -26,6 +26,7 @@ import Check from '../../assets/Check.svg';
 
 import {useTheme} from '../../theme/hook/useTheme';
 import SvgIcon from '../../components/SvgIcon/SvgIcon';
+import Button from '../../components/Button/Button';
 
 const genderMachalEnumValues = Object.values(Gender).map((option, index) => ({
   id: index,
@@ -199,11 +200,7 @@ const Details: React.FC = () => {
       <MarkishDetails updateMachalProp={updateMachalProp} />
 
       <View style={[globalStyles.rowSpace, globalStyles.sectionMargin]}>
-        <TouchableOpacity
-          style={[globalStyles.primaryButton]}
-          onPress={goScanModeSelector}>
-          <Text style={globalStyles.primaryButtonText}>לקיחת טב''א</Text>
-        </TouchableOpacity>
+        <Button onPress={goScanModeSelector} label="לקיחת טב''א" />
       </View>
       <View style={globalStyles.sectionSpacer} />
     </ScrollView>

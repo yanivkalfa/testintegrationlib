@@ -2,13 +2,14 @@ import React, {useEffect, useRef} from 'react';
 import {View, DeviceEventEmitter} from 'react-native';
 import Canvas from 'react-native-canvas';
 
-import globalStyles from '../../global.styles';
 import {styles} from './Scanner.styles';
 
 import {loadAndDrawImage} from './Scanner.utils';
 import {ScannerProps} from './Scanner.types';
+import {useTheme} from '../../theme/hook/useTheme';
 
 const Scanner: React.FC<ScannerProps> = ({onScanCompleted, value}) => {
+  const globalStyles = useTheme();
   const canvasRef = useRef(null);
   const loadingRef = useRef(false);
   const lastImgSrc = useRef(null);
@@ -45,7 +46,7 @@ const Scanner: React.FC<ScannerProps> = ({onScanCompleted, value}) => {
   }, [value]);
 
   return (
-    <View style={[globalStyles.section, globalStyles.sectionFullHeight]}>
+    <View style={[globalStyles.section, styles.canvas]}>
       <Canvas ref={canvasRef} style={styles.canvas} />
     </View>
   );

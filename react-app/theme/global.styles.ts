@@ -1,5 +1,4 @@
 import {StyleSheet} from 'react-native';
-import {palette} from './global.colors';
 import {ColorScheme} from './global.types';
 
 const abstractStyles = {
@@ -68,6 +67,9 @@ const getGlobalStyles = (colorScheme: ColorScheme) => {
     sectionSpacer20: {
       marginTop: 20,
     },
+    sectionSpacer10: {
+      marginTop: 10,
+    },
     horizontalDivider: {
       ...colorScheme.horizontalDivider,
       borderBottomWidth: 1,
@@ -90,6 +92,10 @@ const getGlobalStyles = (colorScheme: ColorScheme) => {
     rowEnd: {
       flexDirection: 'row',
       justifyContent: 'flex-end',
+    },
+    rowStart: {
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
     },
     logo: {
       width: '70%',
@@ -179,6 +185,12 @@ const getGlobalStyles = (colorScheme: ColorScheme) => {
       ...colorScheme.secondaryButtonText,
       fontWeight: 'bold',
     },
+    secondaryButtonActive: {
+      ...colorScheme.secondaryButtonActive,
+    },
+    secondaryButtonTextActive: {
+      ...colorScheme.secondaryButtonTextActive,
+    },
     buttonDisabled: {
       ...colorScheme.buttonDisabled,
     },
@@ -193,94 +205,8 @@ const getGlobalStyles = (colorScheme: ColorScheme) => {
       ...baseInput,
       ...colorScheme.inputWhite,
     },
-
-    // sectionFullHeight: {
-    //   ...baseSection,
-    //   flexGrow: 1,
-    // },
-    // sectionHorizontal: {
-    //   ...baseSection,
-    //   flexDirection: 'row',
-    // },
-    // sectionWithHeader: {
-    //   ...baseSection,
-    //   justifyContent: 'flex-start',
-    // },
-    // sectionSubTitle: {
-    //   fontSize: 16,
-    //   color: '#555',
-    // },
-    // actionButton: {
-    //   flex: 1,
-    //   marginHorizontal: 8,
-    //   padding: 12,
-    //   backgroundColor: '#007BFF',
-    //   borderRadius: 8,
-    //   borderWidth: 1,
-    //   borderColor: '#007BFF',
-    //   alignItems: 'center',
-    //   justifyContent: 'center',
-    // },
-    // actionButtonSelected: {
-    //   backgroundColor: '#E3F2FD',
-    //   borderColor: '#64B5F6',
-    // },
-    // actionButtonText: {
-    //   color: '#fff',
-    //   fontSize: 16,
-    //   fontWeight: 'bold',
-    // },
-    // abortButton: {
-    //   flex: 1,
-    //   marginRight: 8,
-    //   padding: 12,
-    //   backgroundColor: '#fff',
-    //   borderWidth: 1,
-    //   borderColor: '#007BFF',
-    //   borderRadius: 8,
-    //   alignItems: 'center',
-    // },
-    // abortButtonText: {
-    //   fontSize: 16,
-    //   color: '#007BFF',
-    //   fontWeight: 'bold',
-    // },
-    // abortButton_12: {
-    //   flex: 1,
-    //   marginRight: 8,
-    //   padding: 3,
-    //   backgroundColor: '#fff',
-    //   borderWidth: 1,
-    //   borderColor: '#007BFF',
-    //   borderRadius: 8,
-    //   alignItems: 'center',
-    //   justifyContent: 'center',
-    // },
-    // textSize_12: {
-    //   fontSize: 12,
-    //   color: '#007BFF',
-    // },
-    // spacer: {
-    //   marginTop: 8,
-    // },
-    // disabled: {
-    //   backgroundColor: '#7a7a7a',
-    //   borderColor: '#7a7a7a',
-    //   color: '#b5b5b5',
-    // },
     ...abstractStyles,
   });
 };
 
 export default getGlobalStyles;
-
-// width: '100%',
-//     backgroundColor: '#ffffff',
-//     borderRadius: 10,
-//     padding: 15,
-//     marginBottom: 20,
-//     shadowColor: '#000',
-//     shadowOffset: {width: 0, height: 2},
-//     shadowOpacity: 0.1,
-//     shadowRadius: 4,
-//     elevation: 3,

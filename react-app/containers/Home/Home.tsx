@@ -48,8 +48,8 @@ const Home: React.FC = () => {
 
   const unsyncedMachals = useSelector(selectUnsyncedMachals);
   const allMachals = useSelector(selectMachals);
-  console.log('unsyncedMachals', unsyncedMachals);
-  console.log('allMachals', allMachals);
+  //console.log('unsyncedMachals', unsyncedMachals);
+  //console.log('allMachals ', allMachals);
 
   useEffect(() => {
     if (!imgFolderCreated) {

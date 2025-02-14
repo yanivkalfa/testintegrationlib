@@ -4,6 +4,11 @@ export const palette = {
   primary: {
     main: 'rgba(21, 101, 255, 1)',
   },
+  secondary: {
+    main: 'rgb(67, 133, 203)',
+    active: 'rgb(97, 149, 203)',
+    activeLight: 'rgba(227, 242, 253, 1)',
+  },
   success: {
     main: 'rgba(54, 184, 67, 1)',
   },
@@ -92,11 +97,18 @@ const defaultColorScheme: ColorScheme = {
     color: palette.background.paper,
   },
   secondaryButton: {
-    backgroundColor: '#eef0fc',
-    borderColor: palette.grey[300],
+    backgroundColor: palette.background.paper,
+    borderColor: palette.secondary.main,
   },
   secondaryButtonText: {
-    color: palette.grey[300],
+    color: palette.secondary.main,
+  },
+  secondaryButtonActive: {
+    backgroundColor: palette.secondary.activeLight,
+    borderColor: palette.secondary.active,
+  },
+  secondaryButtonTextActive: {
+    color: palette.secondary.active,
   },
   buttonDisabled: {
     backgroundColor: palette.grey[500],

@@ -11,7 +11,6 @@ import {EventDetailsProps} from '../../Details.types';
 
 import LocationInput from '../../../../components/LocationInput/LocationInput';
 import {CityName} from '../../../../components/LocationInput/LocationInput.types';
-import globalStyles from '../../../../global.styles';
 import {useTheme} from '../../../../theme/hook/useTheme';
 
 const HarkashaDetails: React.FC<EventDetailsProps> = ({updateMachalProp}) => {

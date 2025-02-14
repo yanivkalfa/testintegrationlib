@@ -1,11 +1,6 @@
 import {StyleSheet} from 'react-native';
 
 export const styles = StyleSheet.create({
-  selectionContainer: {
-    flexGrow: 1,
-    padding: 16,
-    marginTop: 8,
-  },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',

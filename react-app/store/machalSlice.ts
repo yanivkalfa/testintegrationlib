@@ -6,7 +6,6 @@ import {
   ViewedStatus,
   SyncStatus,
 } from '../config/types';
-import {getRandomIDNumber} from '../utils/math.utils';
 import {FINGERS} from '../config/consts';
 import {deleteFile} from '../managers/FileManager';
 

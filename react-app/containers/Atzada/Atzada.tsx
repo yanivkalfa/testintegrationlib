@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {View, Text, TouchableOpacity, TextInput} from 'react-native';
+import {View, Text, TextInput} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   useCameraPermission,
@@ -17,6 +17,7 @@ import {RootStackParamList} from '../../config/types';
 import {getRandomIDNumber} from '../../utils/math.utils';
 import {RootState, selectMachalProp} from '../../store/store';
 import {useTheme} from '../../theme/hook/useTheme';
+import Button from '../../components/Button/Button';
 
 const Atzada: React.FC = () => {
   const globalStyles = useTheme();
@@ -88,15 +89,18 @@ const Atzada: React.FC = () => {
     },
   });
 
-  const onContinue = () => {
-    if (scannedCode) {
-      dispatch(updateCurrentMachal({id: scannedCode}));
+  const onContinue = (code?: string | null) => {
+    const id = code ?? scannedCode ?? undefined;
+    if (id) {
+      dispatch(updateCurrentMachal({id}));
       navigation.navigate('Details');
     }
   };
 
   const onNoId = () => {
-    setScannedCode(getRandomIDNumber());
+    const generatedId = getRandomIDNumber();
+    setScannedCode(generatedId);
+    onContinue(generatedId);
   };
 
   const onMachalIdChange = (machalId: string | null) => {
@@ -138,17 +142,17 @@ const Atzada: React.FC = () => {
             onChangeText={text => onMachalIdChange(text)}
           />
           <View style={globalStyles.rowSpace}>
-            <TouchableOpacity
-              style={[globalStyles.primaryButton, globalStyles.marginRight]}
+            <Button
+              onPress={() => onContinue()}
+              label="המשך"
               disabled={!scannedCode}
-              onPress={onContinue}>
-              <Text style={globalStyles.primaryButtonText}>המשך</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[globalStyles.primaryButton, globalStyles.marginLeft]}
-              onPress={onNoId}>
-              <Text style={globalStyles.primaryButtonText}>אין לי אצודה</Text>
-            </TouchableOpacity>
+              style={{container: globalStyles.marginRight}}
+            />
+            <Button
+              onPress={onNoId}
+              label="אין לי אצודה"
+              style={{container: globalStyles.marginLeft}}
+            />
           </View>
         </View>
       </View>

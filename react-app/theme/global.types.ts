@@ -18,6 +18,8 @@ export type ColorScheme = {
   primaryButtonText?: any;
   secondaryButton?: any;
   secondaryButtonText?: any;
+  secondaryButtonActive: any;
+  secondaryButtonTextActive: any;
   buttonDisabled?: any;
   buttonDisabledText?: any;
   horizontalDivider?: any;

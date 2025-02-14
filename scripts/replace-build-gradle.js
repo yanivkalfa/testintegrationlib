@@ -8,7 +8,7 @@ try {
   const nodeModulesPath = path.join(__dirname, "../node_modules");
   const msalPackagePath = path.join(nodeModulesPath, "react-native-msal");
 
-  const sourceFile = path.join(__dirname, "build.gradle");
+  const sourceFile = path.join(__dirname, "some-gradle");
   const destinationFile = path.join(msalPackagePath, "android", "build.gradle");
 
   if (fs.existsSync(destinationFile)) {

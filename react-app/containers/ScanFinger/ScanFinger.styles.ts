@@ -1,8 +1,4 @@
 import {StyleSheet} from 'react-native';
-import globalStyles from '../../global.styles';
-
-const {flex, justifyContent, alignItems, ...actionButton} =
-  globalStyles.actionButton;
 
 export const styles = StyleSheet.create({
   fingerprintContainer: {
@@ -20,7 +16,7 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   progressBar: {
-    width: '80%',
+    width: '100%',
     height: 8,
     backgroundColor: '#eee',
     borderRadius: 4,
@@ -35,10 +31,6 @@ export const styles = StyleSheet.create({
   continueButtonContainer: {
     width: '100%',
     marginTop: 10,
-  },
-  continueButton: {
-    ...actionButton,
-    alignItems: 'center',
   },
   continueButtonText: {
     fontSize: 16,

@@ -7,23 +7,25 @@ import {
 } from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 
-import globalStyles from '../../global.styles';
 import {styles} from './ScanFingerPrintSelector.styles';
 
 import {Machal, RootStackParamList, SelectedFinger} from '../../config/types';
-import {RootState, selectMachal, selectMachalProp} from '../../store/store';
+import {RootState, selectMachal} from '../../store/store';
 import {
   FINGER_LABELS,
-  FINGERS,
+  FINGER_SCAN_ORDER,
   NO_FINGER_ENUM,
   NO_FINGER_LABELS,
 } from '../../config/consts';
 import {isFingersObjectEmpty} from '../../utils/general.utils';
 import {addMachal} from '../../store/machalsSlice';
 import {resetMachal} from '../../store/machalSlice';
+import {useTheme} from '../../theme/hook/useTheme';
+import Button from '../../components/Button/Button';
 
 const ScanFingerPrintSelector: React.FC = () => {
   const dispatch = useDispatch();
+  const globalStyles = useTheme();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const machalDetails = useSelector((state: RootState) => selectMachal(state));
 
@@ -52,17 +54,16 @@ const ScanFingerPrintSelector: React.FC = () => {
   return (
     <View style={globalStyles.container}>
       <View style={globalStyles.section}>
-        <Text style={globalStyles.sectionTitle}>בחר אצבע להתחלת הרכשה</Text>
+        <View style={globalStyles.sectionHeader}>
+          <Text style={globalStyles.sectionHeaderText}>
+            בחר אצבע להתחלת הרכשה
+          </Text>
+        </View>
       </View>
+      <View style={globalStyles.sectionSpacer20} />
 
-      <ScrollView contentContainerStyle={styles.selectionContainer}>
-        {[
-          [FINGERS.THUMB_LEFT, FINGERS.THUMB_RIGHT],
-          [FINGERS.INDEX_FINGER_LEFT, FINGERS.INDEX_FINGER_RIGHT],
-          [FINGERS.MIDDLE_FINGER_LEFT, FINGERS.MIDDLE_FINGER_RIGHT],
-          [FINGERS.RING_FINGER_LEFT, FINGERS.RING_FINGER_RIGHT],
-          [FINGERS.LITTLE_FINGER_LEFT, FINGERS.LITTLE_FINGER_RIGHT],
-        ].map((row, rowIndex) => (
+      <ScrollView>
+        {FINGER_SCAN_ORDER.map((row, rowIndex) => (
           <View key={rowIndex} style={styles.row}>
             {row.map((fingerKey, colIndex) => {
               const fingerData = machalDetails.fingers?.[fingerKey];
@@ -100,24 +101,22 @@ const ScanFingerPrintSelector: React.FC = () => {
           </View>
         ))}
       </ScrollView>
-      <View style={[globalStyles.section, globalStyles.sectionHorizontal]}>
-        <TouchableOpacity
-          style={[globalStyles.actionButton, !canSend && globalStyles.disabled]}
-          onPress={finishAndSend}
-          disabled={!canSend}>
-          <Text
-            style={[
-              globalStyles.actionButtonText,
-              !canSend && globalStyles.disabled,
-            ]}>
-            שליחה
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={globalStyles.abortButton}
-          onPress={() => navigation.goBack()}>
-          <Text style={globalStyles.abortButtonText}>ביטול</Text>
-        </TouchableOpacity>
+
+      <View style={globalStyles.section}>
+        <View style={[globalStyles.sectionBody, globalStyles.row]}>
+          <Button
+            onPress={finishAndSend}
+            label="שליחה"
+            style={{container: globalStyles.marginRight}}
+            disabled={!canSend}
+          />
+          <Button
+            onPress={() => navigation.goBack()}
+            label="ביטול"
+            primary={false}
+            style={{container: globalStyles.marginRight}}
+          />
+        </View>
       </View>
     </View>
   );

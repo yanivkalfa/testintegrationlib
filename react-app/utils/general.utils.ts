@@ -1,4 +1,9 @@
-import {MEZAH_LITE_LONG_MACHAL_REGEX} from '../config/consts';
+import {
+  FINGER_SCAN_ORDER,
+  FINGER_SCAN_ORDER_BY_HAND,
+  FINGERS,
+  MEZAH_LITE_LONG_MACHAL_REGEX,
+} from '../config/consts';
 import {
   CaseType,
   FingerprintsBody,
@@ -111,4 +116,28 @@ export const prepareStateToSend = (machal: Machal): FingerprintsBody => {
     caseMetaData: convertToBase64(JSON.stringify(mezahCaseMetaData)),
     isManualSubmit: false,
   } as FingerprintsBody;
+};
+
+export const getNextFinger = (
+  stateFingers: FingersObject,
+): keyof typeof FINGERS | null => {
+  for (const pair of FINGER_SCAN_ORDER) {
+    for (const fingerKey of pair) {
+      if (!(fingerKey in stateFingers) || !stateFingers[fingerKey]) {
+        return fingerKey;
+      }
+    }
+  }
+  return null;
+};
+
+export const getNextFingerByHandSide = (
+  stateFingers: FingersObject,
+): keyof typeof FINGERS | null => {
+  for (const fingerKey of FINGER_SCAN_ORDER_BY_HAND) {
+    if (!(fingerKey in stateFingers) || !stateFingers[fingerKey]) {
+      return fingerKey as keyof typeof FINGERS;
+    }
+  }
+  return null;
 };
