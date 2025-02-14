@@ -27,7 +27,7 @@ import {
 } from '../../store/store';
 import {addOrUpdateFingerPrintForNewMachal} from '../../store/machalSlice';
 
-import {saveFile} from '../../managers/FileManager';
+import {deleteFile, saveFile} from '../../managers/FileManager';
 import {
   beginCaptureImage,
   cancelCaptureImage,
@@ -43,7 +43,7 @@ import {getNextFinger} from '../../utils/general.utils';
 
 const ScanFinger: React.FC = () => {
   const globalStyles = useTheme();
-  const [canScan, setCanScan] = useState<boolean>(false);
+  const [canScan, setCanScan] = useState<boolean>(true);
   const [scannedPrint, setScannedPrint] = useState<string>('');
   const [selectedReason, setSelectedReason] = useState<
     keyof typeof NO_FINGER_ENUM
@@ -67,20 +67,6 @@ const ScanFinger: React.FC = () => {
     selectMachalProp(state, 'fingers'),
   );
 
-  // useEffect(() => {
-  //   if (machalScanMode === ScanMode.AutoScan) {
-  //     const nextFinger = getNextFinger(machalFingers as FingersObject);
-  //     if (nextFinger && nextFinger !== route.params?.finger) {
-  //       const replaceAction = StackActions.replace('ScanFinger', {
-  //         finger: nextFinger,
-  //       });
-  //       navigation.dispatch(replaceAction);
-  //     } else {
-  //       navigation.navigate('Details');
-  //     }
-  //   }
-  // }, [machalFingers, machalScanMode]);
-
   const canContinue = canScan ? !!scannedPrint : !!selectedReason;
 
   const onContinue = async () => {
@@ -94,7 +80,19 @@ const ScanFinger: React.FC = () => {
 
     try {
       let fingerPrint: Fingerprint = selectedReason;
-      if (canScan) {
+
+      const currentFingerData = machalFingers?.[finger];
+      if (
+        !canScan &&
+        selectedReason &&
+        currentFingerData &&
+        typeof currentFingerData === 'object' &&
+        'storageFileName' in currentFingerData
+      ) {
+        await deleteFile(currentFingerData.storageFileName);
+      }
+
+      if (canScan /*&& scannedPrint*/) {
         const fileName = `${machalId}_${finger}.base64`;
         await saveFile(fileName, testPrintBase64); //scannedPrint);
         fingerPrint = {
@@ -217,7 +215,7 @@ const ScanFinger: React.FC = () => {
             label="המשך"
             style={{container: scannedPrint ? globalStyles.marginRight : {}}}
             onPress={() => onContinue()}
-            disabled={!canContinue}
+            // disabled={!canContinue}
           />
           {scannedPrint && (
             <Button

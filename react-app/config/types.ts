@@ -48,6 +48,14 @@ export const CaseAcquisitionLocationType = {
   [OriginLocation.Shetach]: 3,
 };
 
+export enum HarkashaEnum {
+  FINGER = 'FINGER',
+  PALM = 'PALM',
+  CORPSE = 'CORPSE',
+  OTHER = 'OTHER',
+  FINGER_PART = 'FINGER_PART',
+}
+
 export enum HarkashaDescription {
   CORPSE = 'גופה שלמה',
   PALM = 'כף יד',

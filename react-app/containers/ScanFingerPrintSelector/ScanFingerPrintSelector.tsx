@@ -22,6 +22,7 @@ import {addMachal} from '../../store/machalsSlice';
 import {resetMachal} from '../../store/machalSlice';
 import {useTheme} from '../../theme/hook/useTheme';
 import Button from '../../components/Button/Button';
+import FingerButton from './FingerButton/FingerButton';
 
 const ScanFingerPrintSelector: React.FC = () => {
   const dispatch = useDispatch();
@@ -60,7 +61,15 @@ const ScanFingerPrintSelector: React.FC = () => {
           </Text>
         </View>
       </View>
-      <View style={globalStyles.sectionSpacer20} />
+      <View
+        style={[
+          globalStyles.sectionTransparent,
+          globalStyles.rowAround,
+          globalStyles.sectionPadding,
+        ]}>
+        <Text style={globalStyles.sectionBodyTitleSecondaryText}>יד שמאל</Text>
+        <Text style={globalStyles.sectionBodyTitleSecondaryText}>יד ימין</Text>
+      </View>
 
       <ScrollView>
         {FINGER_SCAN_ORDER.map((row, rowIndex) => (
@@ -75,27 +84,14 @@ const ScanFingerPrintSelector: React.FC = () => {
                 Object.values(NO_FINGER_ENUM).includes(fingerData);
 
               return (
-                <TouchableOpacity
+                <FingerButton
                   key={colIndex}
                   onPress={() => goScanFinger(fingerKey)}
-                  style={[
-                    styles.fingerButton,
-                    hasImage && styles.fingerButtonChecked,
-                    isNoFinger && styles.fingerButtonError,
-                  ]}>
-                  <Text style={styles.fingerText}>
-                    {FINGER_LABELS[fingerKey]}
-                  </Text>
-                  <Text style={styles.statusText}>
-                    {hasImage
-                      ? 'נסרק'
-                      : isNoFinger
-                      ? NO_FINGER_LABELS[
-                          fingerData as keyof typeof NO_FINGER_ENUM
-                        ]
-                      : 'טרם נסרק'}
-                  </Text>
-                </TouchableOpacity>
+                  fingerKey={fingerKey}
+                  fingerData={fingerData}
+                  hasImage={hasImage}
+                  isNoFinger={isNoFinger}
+                />
               );
             })}
           </View>

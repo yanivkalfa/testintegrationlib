@@ -1,5 +1,5 @@
 import React from 'react';
-import {iconMap} from './Icons';
+import {iconMap} from './SvgIcon.icons';
 import {SvgIconProps} from './SvgIcon.types';
 import {Text} from 'react-native';
 

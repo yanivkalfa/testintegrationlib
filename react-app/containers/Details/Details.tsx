@@ -10,6 +10,7 @@ import {
   CaseType,
   Gender,
   HarkashaDescription,
+  HarkashaEnum,
   RootStackParamList,
 } from '../../config/types';
 
@@ -22,7 +23,6 @@ import {formatMachalId, formatWoundedId} from '../../utils/general.utils';
 import EventDetails from './components/EventDetails/EventDetails';
 import HarkashaDetails from './components/HarkashaDetails/HarkashaDetails';
 import MarkishDetails from './components/MarkishDetails/MarkishDetails';
-import Check from '../../assets/Check.svg';
 
 import {useTheme} from '../../theme/hook/useTheme';
 import SvgIcon from '../../components/SvgIcon/SvgIcon';
@@ -33,7 +33,21 @@ const genderMachalEnumValues = Object.values(Gender).map((option, index) => ({
   name: option,
 }));
 
-const ImageToEnumMap = ['FINGER', 'PALM', 'CORPSE', 'OTHER', 'FINGER_PART'];
+const ImageToEnumMap: HarkashaEnum[] = [
+  HarkashaEnum.FINGER,
+  HarkashaEnum.PALM,
+  HarkashaEnum.CORPSE,
+  HarkashaEnum.OTHER,
+  HarkashaEnum.FINGER_PART,
+];
+
+const ImageToFileName: Record<HarkashaEnum, string> = {
+  [HarkashaEnum.FINGER]: 'finger',
+  [HarkashaEnum.PALM]: 'palm',
+  [HarkashaEnum.CORPSE]: 'corpse',
+  [HarkashaEnum.OTHER]: 'unknown',
+  [HarkashaEnum.FINGER_PART]: 'fingerPart',
+};
 
 const getSelector = (
   enumKey: keyof typeof HarkashaDescription,
@@ -111,9 +125,9 @@ const Details: React.FC = () => {
             </View>
             <View style={globalStyles.verticalDividier}></View>
             {machalCaseType === CaseType.Wounded ? (
-              <Check width={20} />
+              <SvgIcon name="Check" width={40} />
             ) : (
-              <SvgIcon name="CORPSE" width={40} />
+              <SvgIcon name="corpse" width={40} />
             )}
           </View>
         </View>
@@ -154,7 +168,7 @@ const Details: React.FC = () => {
                           styles.selectedButton,
                       ]}
                       onPress={() => handleMimtzaSelect(selector)}>
-                      <SvgIcon name={key} width={40} />
+                      <SvgIcon name={ImageToFileName[key]} width={40} />
                       <Text
                         style={[
                           styles.iconText,

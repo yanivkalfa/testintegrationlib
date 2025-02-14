@@ -1,7 +1,5 @@
-import {iconMap} from './Icons';
-
 export type SvgIconProps = {
-  name: keyof typeof iconMap;
+  name: string;
   width?: number;
   height?: number;
 };

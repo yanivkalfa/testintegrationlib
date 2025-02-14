@@ -77,6 +77,9 @@ const defaultColorScheme: ColorScheme = {
   sectionBodyTitleText: {
     color: palette.text.primary,
   },
+  sectionBodyTitleSecondaryText: {
+    color: palette.grey[600],
+  },
   sectionHeaderMachal: {
     backgroundColor: palette.grey[200],
   },

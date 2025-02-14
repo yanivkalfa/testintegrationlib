@@ -34,9 +34,8 @@ import {deleteMachalThunk, updateMachal} from '../../store/machalsSlice';
 import {useTheme} from '../../theme/hook/useTheme';
 
 import Logo from '../../assets/logo.svg';
-import Wounded from '../../assets/icons/wounded.svg';
-import Corpse from '../../assets/icons/harkashaDescription/corpse.svg';
 import {getRandomIDNumber} from '../../utils/math.utils';
+import SvgIcon from '../../components/SvgIcon/SvgIcon';
 
 const Home: React.FC = () => {
   const globalStyles = useTheme();
@@ -162,13 +161,13 @@ const Home: React.FC = () => {
             <TouchableOpacity
               style={[styles.button, globalStyles.marginRight]}
               onPress={() => handlePress(CaseType.Machal)}>
-              <Corpse width={20} />
+              <SvgIcon name="corpse" width={20} />
               <Text style={styles.buttonText}>חלל</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.button, globalStyles.marginLeft]}
               onPress={() => handlePress(CaseType.Wounded)}>
-              <Wounded width={20} />
+              <SvgIcon name="wounded" width={20} />
               <Text style={styles.buttonText}>פצוע אלמוני</Text>
             </TouchableOpacity>
           </View>

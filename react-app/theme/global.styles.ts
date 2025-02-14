@@ -89,6 +89,10 @@ const getGlobalStyles = (colorScheme: ColorScheme) => {
       flexDirection: 'row',
       justifyContent: 'space-between',
     },
+    rowAround: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+    },
     rowEnd: {
       flexDirection: 'row',
       justifyContent: 'flex-end',
@@ -145,7 +149,11 @@ const getGlobalStyles = (colorScheme: ColorScheme) => {
     },
     sectionBodyTitleText: {
       ...abstractStyles.titleBase,
-      color: colorScheme.sectionBodyTitleText?.color,
+      ...colorScheme.sectionBodyTitleText,
+    },
+    sectionBodyTitleSecondaryText: {
+      ...abstractStyles.titleBase,
+      ...colorScheme.sectionBodyTitleSecondaryText,
     },
     sectionHeaderMachal: {
       ...abstractStyles.sectionPadding,

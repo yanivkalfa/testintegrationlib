@@ -58,6 +58,7 @@ export const deleteFile = async (fileName: string): Promise<void> => {
     const exists = await RNFS.exists(filePath);
     if (exists) {
       await RNFS.unlink(filePath);
+      console.log('File deleted: ', fileName);
     } else {
     }
   } catch (error) {}

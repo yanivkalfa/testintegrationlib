@@ -43,7 +43,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({updateMachalProp}) => {
       } catch (error) {
         const events = await vault.get(PRIMARY_EVENTS);
         setPrimaryEvents(events || defaultPrimaryEvents);
-        console.error('Error fetching primary events:', error);
+        console.log('Error fetching primary events:', error);
       }
 
       setLoading(false);

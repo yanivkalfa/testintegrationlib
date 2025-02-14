@@ -10,6 +10,7 @@ export type ColorScheme = {
   sectionBodyText?: any;
   sectionBodyTitle?: any;
   sectionBodyTitleText?: any;
+  sectionBodyTitleSecondaryText: any;
   sectionHeaderMachal?: any;
   sectionHeaderMachalText?: any;
   sectionHeaderWounded?: any;

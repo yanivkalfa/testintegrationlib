@@ -78,6 +78,69 @@ export const FINGER_SCAN_ORDER_BY_HAND = [
   FINGERS.LITTLE_FINGER_RIGHT,
 ];
 
+export const FINGER_IMAGE_MAP = {
+  [FINGERS.THUMB_LEFT]: {
+    done: 'left_1_done',
+    error: 'left_1_error',
+    select: 'left_1_select',
+    complete: 'leftComplete1',
+  },
+  [FINGERS.INDEX_FINGER_LEFT]: {
+    done: 'left_2_done',
+    error: 'left_2_error',
+    select: 'left_2_select',
+    complete: 'leftComplete2',
+  },
+  [FINGERS.MIDDLE_FINGER_LEFT]: {
+    done: 'left_3_done',
+    error: 'left_3_error',
+    select: 'left_3_select',
+    complete: 'leftComplete3',
+  },
+  [FINGERS.RING_FINGER_LEFT]: {
+    done: 'left_4_done',
+    error: 'left_4_error',
+    select: 'left_4_select',
+    complete: 'leftComplete4',
+  },
+  [FINGERS.LITTLE_FINGER_LEFT]: {
+    done: 'left_5_done',
+    error: 'left_5_error',
+    select: 'left_5_select',
+    complete: 'leftComplete5',
+  },
+  [FINGERS.THUMB_RIGHT]: {
+    done: 'right_1_done',
+    error: 'right_1_error',
+    select: 'right_1_select',
+    complete: 'rightComplete1',
+  },
+  [FINGERS.INDEX_FINGER_RIGHT]: {
+    done: 'right_2_done',
+    error: 'right_2_error',
+    select: 'right_2_select',
+    complete: 'rightComplete2',
+  },
+  [FINGERS.MIDDLE_FINGER_RIGHT]: {
+    done: 'right_3_done',
+    error: 'right_3_error',
+    select: 'right_3_select',
+    complete: 'rightComplete3',
+  },
+  [FINGERS.RING_FINGER_RIGHT]: {
+    done: 'right_4_done',
+    error: 'right_4_error',
+    select: 'right_4_select',
+    complete: 'rightComplete4',
+  },
+  [FINGERS.LITTLE_FINGER_RIGHT]: {
+    done: 'right_5_done',
+    error: 'right_5_error',
+    select: 'right_5_select',
+    complete: 'rightComplete5',
+  },
+};
+
 export const NO_FINGER_LABELS = {
   [NO_FINGER_ENUM.NO_FINGER]: 'אצבע לא קיימת',
   [NO_FINGER_ENUM.FINGER_CUT]: 'אצבע קטועה',
