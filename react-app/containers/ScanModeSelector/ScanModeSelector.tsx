@@ -22,6 +22,7 @@ import {
   getNextFinger,
 } from '../../utils/general.utils';
 import Button from '../../components/Button/Button';
+import {APP_VERSION} from '../../config/consts';
 
 const ScanModeSelector: React.FC = () => {
   const dispatch = useDispatch();
@@ -87,7 +88,7 @@ const ScanModeSelector: React.FC = () => {
           <Text style={globalStyles.sectionBodyText}>
             {connectedDeviceName}
           </Text>
-          <Text style={globalStyles.sectionBodyText}>V: 3.11.40a</Text>
+          <Text style={globalStyles.sectionBodyText}>V: {APP_VERSION}</Text>
         </View>
       </View>
 

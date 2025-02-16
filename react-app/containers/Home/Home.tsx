@@ -12,7 +12,6 @@ import {
   SyncStatus,
 } from '../../config/types';
 
-import {createImagesFolder} from '../../managers/FileManager';
 import {
   getAccessToken,
   initClientMsal,
@@ -40,31 +39,20 @@ import {
   checkAndDeleteUnusedPrints,
   deleteOldMachalsAndUnusedPrints,
 } from '../../managers/GarbageManager';
+import {listFiles} from '../../managers/FileManager';
 
 const Home: React.FC = () => {
   const globalStyles = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const {isOnline, isLoggedIn, imgFolderCreated} = useSelector(
+  const {isOnline, isLoggedIn} = useSelector(
     (state: RootState) => state.appConfig,
   );
 
   const unsyncedMachals = useSelector(selectUnsyncedMachals);
   const allMachals = useSelector(selectMachals);
   //console.log('unsyncedMachals', unsyncedMachals);
-  //console.log('allMachals ', allMachals);
-
-  useEffect(() => {
-    if (!imgFolderCreated) {
-      createImagesFolder()
-        .then(() => {
-          dispatch(updateConfig({name: 'imgFolderCreated', value: true}));
-        })
-        .catch(() => {
-          console.log('Something went wrong');
-        });
-    }
-  }, [imgFolderCreated, createImagesFolder, updateConfig, console]);
+  //console.log('all Machals ', allMachals);
 
   useEffect(() => {
     checkSyncStatus(isOnline, isLoggedIn, unsyncedMachals);
@@ -73,14 +61,14 @@ const Home: React.FC = () => {
   useEffect(() => {
     const authenticate = async () => {
       await initClientMsal();
-      const accessToken = await getAccessToken();
-      if (accessToken) {
-        console.log('yes access token');
-        updateIsLoggedIn(true);
-      } else {
-        console.log('No access token');
-        login();
-      }
+      // const accessToken = await getAccessToken();
+      // if (accessToken) {
+      //   console.log('yes access token');
+      //   updateIsLoggedIn(true);
+      // } else {
+      //   console.log('No access token');
+      //   login();
+      // }
     };
 
     checkConnectedDevicesPermissions();
@@ -100,6 +88,11 @@ const Home: React.FC = () => {
   };
 
   useEffect(() => {
+    const a = async () => {
+      console.log(await listFiles());
+      //console.log(checkAndDeleteUnusedPrints());
+    };
+    a();
     // console.log('zzzzzzzzzzzzzzzzzzzzzzzzzzzzz');
     // dispatch(
     //   updateMachal({

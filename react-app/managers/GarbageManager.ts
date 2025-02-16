@@ -10,13 +10,13 @@ export const checkAndDeleteUnusedPrints = async (): Promise<void> => {
   const state = store.getState();
   const machals: Machals = selectMachals(state);
 
-  if (!files?.length || !machals?.length) {
-    console.log('No files or Machals found.');
+  if (!files?.length) {
+    console.log('No files.');
     return;
   }
 
   const allFingerprints = new Set(
-    machals.flatMap(machal =>
+    (machals || []).flatMap(machal =>
       Object.values(machal.fingers || {})
         .filter(
           finger => typeof finger === 'object' && 'storageFileName' in finger,
@@ -25,16 +25,15 @@ export const checkAndDeleteUnusedPrints = async (): Promise<void> => {
     ),
   );
 
-  console.log('allFingerprints', allFingerprints);
   await Promise.all(
     files.map(async file => {
-      if (!allFingerprints.has(file.name)) {
+      if (!allFingerprints.has(file) || !machals.length) {
         try {
-          await deleteFile(file.name);
-          console.log(`Deleted orphaned fingerprint file: ${file.name}`);
+          await deleteFile(file);
+          console.log(`Deleted orphaned fingerprint file: ${file}`);
         } catch (error) {
           console.log(
-            `Failed to delete orphaned fingerprint file: ${file.name}`,
+            `Failed to delete orphaned fingerprint file: ${file}`,
             error,
           );
         }

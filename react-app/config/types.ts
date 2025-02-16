@@ -10,7 +10,6 @@ export type RootStackParamList = {
 };
 
 export type ConfigState = {
-  imgFolderCreated: boolean;
   theme: string;
   isOnline: boolean;
   isLoggedIn: boolean;
@@ -118,6 +117,9 @@ export type FingerFile = {
 export type SelectedFinger = keyof typeof FINGERS | null;
 
 export type Fingerprint = keyof typeof NO_FINGER_ENUM | FingerFile;
+export type ServerFingerprint =
+  | keyof typeof NO_FINGER_ENUM
+  | Omit<FingerFile, 'storageFileName'>;
 
 export type FingersObject = Partial<Record<keyof typeof FINGERS, Fingerprint>>;
 
@@ -141,7 +143,11 @@ export type MezahCaseMetaData = {
   caseType: CaseType;
 };
 
-export type FingerprintsBody = FingersObject & {
+export type ServerFingersObject = Partial<
+  Record<keyof typeof FINGERS, ServerFingerprint>
+>;
+
+export type FingerprintsBody = ServerFingersObject & {
   mahal_id: string;
   scanner_id: string;
   caseMetaData: string;

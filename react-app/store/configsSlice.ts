@@ -3,7 +3,6 @@ import {ConfigState, UpdateConfigPayload} from '../config/types';
 import {DEFAULT} from '../config/consts';
 
 const initialState: ConfigState = {
-  imgFolderCreated: false,
   theme: DEFAULT,
   isOnline: true,
   isLoggedIn: true,

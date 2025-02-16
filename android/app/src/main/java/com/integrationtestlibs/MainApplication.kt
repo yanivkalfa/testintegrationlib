@@ -16,6 +16,8 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactInstanceManager.ReactInstanceEventListener
+import com.integrationtestlibs.filemanager.FileManagerPackage
+
 import com.utils.Emitter
 
 class MainApplication : Application(), ReactApplication {
@@ -27,7 +29,8 @@ class MainApplication : Application(), ReactApplication {
                     // Register your custom packages here
                     add(ScannerPackage())
                     add(SchedulerPackage())
-                    add(ScreenStatePackage()) // Add the ScreenStatePackage
+                    add(ScreenStatePackage())
+                    add(FileManagerPackage())
                 }
 
             override fun getJSMainModuleName(): String = "index"

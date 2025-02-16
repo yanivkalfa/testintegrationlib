@@ -1,3 +1,4 @@
+import {InteractionManager} from 'react-native';
 import {
   FINGER_SCAN_ORDER,
   FINGER_SCAN_ORDER_BY_HAND,
@@ -9,7 +10,9 @@ import {
   FingerprintsBody,
   FingersObject,
   Machal,
+  ServerFingerprint,
 } from '../config/types';
+import {readFile} from '../managers/FileManager';
 
 const slice = (str: string, start: number, end?: number) =>
   str.slice(start, end);
@@ -95,22 +98,51 @@ export const isFingersObjectEmpty = (
   return !fingers || Object.keys(fingers).length === 0;
 };
 
-export const prepareStateToSend = (machal: Machal): FingerprintsBody => {
-  const {
-    scannerId,
-    scanMode,
-    syncStatus,
-    syncFailedReason,
-    syncAttemts,
-    viewStatus,
-    fingers,
-    createdAt,
-    updatedAt,
-    ...mezahCaseMetaData
-  } = machal;
-  // go over fingers and build correct fingers object
+/**
+ * Runs an async operation after React Native interactions complete.
+ *
+ * @param operation - A function that returns a Promise.
+ * @param args - Arguments to pass to the operation.
+ * @returns A Promise resolving to the result of the operation.
+ */
+export const runNonBlockingOperation = <T>(
+  operation: (...args: any[]) => Promise<T>,
+  ...args: any[]
+): Promise<T> => {
+  return new Promise((resolve, reject) => {
+    InteractionManager.runAfterInteractions(() => {
+      operation(...args)
+        .then(resolve)
+        .catch(reject);
+    });
+  });
+};
+
+export const prepareStateToSend = async (
+  machal: Machal,
+): Promise<FingerprintsBody> => {
+  const {scannerId, fingers, ...mezahCaseMetaData} = machal;
+
+  const newFingersEntries: [string, ServerFingerprint | string][] = [];
+
+  for (const [fingerName, finger] of Object.entries(fingers)) {
+    if (
+      typeof finger === 'object' &&
+      'storageFileName' in finger &&
+      finger.storageFileName
+    ) {
+      const {storageFileName, ...rest} = finger;
+      const base64 =
+        (await runNonBlockingOperation(readFile, storageFileName)) || '';
+      console.log('fingerName', fingerName);
+      newFingersEntries.push([fingerName, {...rest, base64}]);
+    } else {
+      newFingersEntries.push([fingerName, finger]);
+    }
+  }
+
   return {
-    ...fingers,
+    ...Object.fromEntries(newFingersEntries),
     mahal_id: mezahCaseMetaData.id,
     scanner_id: scannerId,
     caseMetaData: convertToBase64(JSON.stringify(mezahCaseMetaData)),
