@@ -267,11 +267,11 @@ public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
         return;
       }
 
-      mIBScanDevice.setProperty(IBScanDevice.PropertyId.ENABLE_SPOOF, "FALSE");
-      mIBScanDevice.setProperty(IBScanDevice.PropertyId.DISABLE_SEGMENT_ROTATION, "TRUE");
-      mIBScanDevice.setProperty(IBScanDevice.PropertyId.SPOOF_LEVEL, "5");
-      mIBScanDevice.setProperty(IBScanDevice.PropertyId.RESERVED_IMAGE_PROCESS_THRESHOLD, "2");
-      mIBScanDevice.setProperty(IBScanDevice.PropertyId.RESERVED_ENHANCED_RESULT_IMAGE_LEVEL, "5");
+      //mIBScanDevice.setProperty(IBScanDevice.PropertyId.ENABLE_SPOOF, "FALSE");
+      //mIBScanDevice.setProperty(IBScanDevice.PropertyId.DISABLE_SEGMENT_ROTATION, "TRUE");
+      //mIBScanDevice.setProperty(IBScanDevice.PropertyId.SPOOF_LEVEL, "5");
+      //mIBScanDevice.setProperty(IBScanDevice.PropertyId.RESERVED_IMAGE_PROCESS_THRESHOLD, "2");
+      //mIBScanDevice.setProperty(IBScanDevice.PropertyId.RESERVED_ENHANCED_RESULT_IMAGE_LEVEL, "5");
 
       // Set decimation to reduce image size or quality
       // mIBScanDevice.setProperty(IBScanDevice.PropertyId.ENABLE_DECIMATION, "TRUE");
@@ -360,7 +360,7 @@ public class ScannerHelper implements IBScanListener, IBScanDeviceListener {
   @Override
   public void deviceImagePreviewAvailable(IBScanDevice device, ImageData image) {
     if (events != null) {
-      Bitmap bitmap = image.toBitmapScaled(200, 200);
+      Bitmap bitmap = image.toBitmapScaled(200, 300);
       events.onCaptureUpdated(bitmap);
     }
   }

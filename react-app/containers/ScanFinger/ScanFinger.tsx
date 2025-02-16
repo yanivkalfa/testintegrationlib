@@ -38,8 +38,8 @@ import {testPrintBase64} from '../../assets/testPrintBase64';
 import Scanner from '../Scanner/Scanner';
 import NoFingerReasons from './components/NoFingerReasons/NoFingerReasons';
 import {useTheme} from '../../theme/hook/useTheme';
-import Button from '../../components/Button/Button';
 import {getNextFinger} from '../../utils/general.utils';
+import Button from '../../components/Button/Button';
 
 const ScanFinger: React.FC = () => {
   const globalStyles = useTheme();
@@ -71,7 +71,7 @@ const ScanFinger: React.FC = () => {
 
   const onContinue = async () => {
     if (!canContinue) {
-      //return false;
+      return false;
     }
     if (!machalId) {
       console.error('Machal ID is missing!');
@@ -94,7 +94,8 @@ const ScanFinger: React.FC = () => {
 
       if (canScan /*&& scannedPrint*/) {
         const fileName = `${machalId}_${finger}.base64`;
-        await saveFile(fileName, testPrintBase64); //scannedPrint);
+        //await saveFile(fileName, testPrintBase64); //scannedPrint);
+        await saveFile(fileName, scannedPrint); //scannedPrint);
         fingerPrint = {
           storageFileName: fileName,
           height: 200,
@@ -215,14 +216,14 @@ const ScanFinger: React.FC = () => {
             label="המשך"
             style={{container: scannedPrint ? globalStyles.marginRight : {}}}
             onPress={() => onContinue()}
-            // disabled={!canContinue}
+            disabled={!canContinue}
           />
           {scannedPrint && (
             <Button
               label="סריקה חוזרת"
               primary={false}
               style={{container: globalStyles.marginLeft}}
-              onPress={() => onContinue()}
+              onPress={handleCanScane}
               disabled={!isDeviceConnected}
             />
           )}

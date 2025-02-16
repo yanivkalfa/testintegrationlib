@@ -89,7 +89,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     const a = async () => {
-      console.log(await listFiles());
+      //const filesList = await listFiles();
       //console.log(checkAndDeleteUnusedPrints());
     };
     a();
